@@ -50,6 +50,7 @@ namespace Quantum {
   #endif //;
   
   public enum Team : int {
+    Spec,
     Left,
     Right,
   }

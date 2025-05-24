@@ -46,7 +46,7 @@ MonoBehaviour:
       X:
         RawValue: 0
       Y:
-        RawValue: 0
+        RawValue: -25559
     Height:
       RawValue: 0
     VerticalOffset:
@@ -89,7 +89,7 @@ MonoBehaviour:
       X:
         RawValue: 494796
       Y:
-        RawValue: 104036
+        RawValue: 78477
     Height:
       RawValue: 0
     VerticalOffset:
@@ -132,7 +132,7 @@ MonoBehaviour:
       X:
         RawValue: 494796
       Y:
-        RawValue: -105678
+        RawValue: -131237
     Height:
       RawValue: 0
     VerticalOffset:
@@ -175,7 +175,7 @@ MonoBehaviour:
       X:
         RawValue: -498860
       Y:
-        RawValue: 104036
+        RawValue: 78477
     Height:
       RawValue: 0
     VerticalOffset:
@@ -218,7 +218,7 @@ MonoBehaviour:
       X:
         RawValue: -498860
       Y:
-        RawValue: -105678
+        RawValue: -131237
     Height:
       RawValue: 0
     VerticalOffset:
@@ -261,7 +261,7 @@ MonoBehaviour:
       X:
         RawValue: 0
       Y:
-        RawValue: 0
+        RawValue: -25559
     Height:
       RawValue: 0
     VerticalOffset:
@@ -304,7 +304,7 @@ MonoBehaviour:
       X:
         RawValue: 0
       Y:
-        RawValue: 262144
+        RawValue: 236584
     Height:
       RawValue: 0
     VerticalOffset:
@@ -347,7 +347,7 @@ MonoBehaviour:
       X:
         RawValue: 0
       Y:
-        RawValue: -262144
+        RawValue: -287703
     Height:
       RawValue: 0
     VerticalOffset:
@@ -390,7 +390,7 @@ MonoBehaviour:
       X:
         RawValue: 494796
       Y:
-        RawValue: 182078
+        RawValue: 156519
     Height:
       RawValue: 0
     VerticalOffset:
@@ -433,7 +433,7 @@ MonoBehaviour:
       X:
         RawValue: 530841
       Y:
-        RawValue: 102012
+        RawValue: 76453
     Height:
       RawValue: 0
     VerticalOffset:
@@ -476,7 +476,7 @@ MonoBehaviour:
       X:
         RawValue: 530841
       Y:
-        RawValue: -101149
+        RawValue: -126708
     Height:
       RawValue: 0
     VerticalOffset:
@@ -519,7 +519,7 @@ MonoBehaviour:
       X:
         RawValue: 560332
       Y:
-        RawValue: 431
+        RawValue: -25127
     Height:
       RawValue: 0
     VerticalOffset:
@@ -562,7 +562,7 @@ MonoBehaviour:
       X:
         RawValue: 494796
       Y:
-        RawValue: -182077
+        RawValue: -207636
     Height:
       RawValue: 0
     VerticalOffset:
@@ -605,7 +605,7 @@ MonoBehaviour:
       X:
         RawValue: -494796
       Y:
-        RawValue: 182077
+        RawValue: 156518
     Height:
       RawValue: 0
     VerticalOffset:
@@ -648,7 +648,7 @@ MonoBehaviour:
       X:
         RawValue: -531628
       Y:
-        RawValue: 100759
+        RawValue: 75200
     Height:
       RawValue: 0
     VerticalOffset:
@@ -691,7 +691,7 @@ MonoBehaviour:
       X:
         RawValue: -531628
       Y:
-        RawValue: -102401
+        RawValue: -127960
     Height:
       RawValue: 0
     VerticalOffset:
@@ -734,7 +734,7 @@ MonoBehaviour:
       X:
         RawValue: -561119
       Y:
-        RawValue: -820
+        RawValue: -26379
     Height:
       RawValue: 0
     VerticalOffset:
@@ -777,7 +777,7 @@ MonoBehaviour:
       X:
         RawValue: -495583
       Y:
-        RawValue: -182468
+        RawValue: -208027
     Height:
       RawValue: 0
     VerticalOffset:
@@ -837,7 +837,7 @@ MonoBehaviour:
           X:
             RawValue: 524288
           Y:
-            RawValue: 0
+            RawValue: -25559
         Rotation:
           RawValue: 0
     - rid: 3175847540494958593
@@ -894,7 +894,7 @@ MonoBehaviour:
           X:
             RawValue: -524288
           Y:
-            RawValue: 0
+            RawValue: -25559
         Rotation:
           RawValue: 0
     - rid: 7634658054901858305

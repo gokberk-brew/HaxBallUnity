@@ -4,6 +4,7 @@ component Goal{
     Team Team;
 }
 enum Team {
+    Spec,
     Left,
     Right
 }
