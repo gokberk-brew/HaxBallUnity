@@ -1,0 +1,11 @@
+singleton component ScoreState {
+  Int32 ScoreLeft;
+  Int32 ScoreRight;
+  Int32 ScoreLimit;
+  Boolean GameEnded;
+  Team WinningTeam;
+  
+  // Respawn control
+  Boolean IsGoalPending;
+  Int32 RespawnCountdown;
+}

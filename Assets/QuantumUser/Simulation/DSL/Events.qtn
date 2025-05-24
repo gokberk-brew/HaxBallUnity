@@ -1,0 +1,4 @@
+synced event OnGoalScored{
+    Team ScoredTeam;
+    ScoreState ScoreSate;
+}

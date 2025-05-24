@@ -1,0 +1,6 @@
+component PlayerState {
+    PlayerRef Player;
+    Team Team;
+    FPVector2 SpawnPosition;
+    Boolean ShootIndicator;
+}
