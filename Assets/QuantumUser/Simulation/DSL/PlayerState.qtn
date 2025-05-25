@@ -3,5 +3,5 @@ component PlayerState {
     Team Team;
     FPVector2 SpawnPosition;
     Boolean ShootIndicator;
-    QString<4> Nickname;
+    QStringUtf8<32> Nickname;
 }

@@ -123,7 +123,7 @@ namespace Quantum.Prototypes {
     public Quantum.QEnum32<Team> Team;
     public FPVector2 SpawnPosition;
     public QBoolean ShootIndicator;
-    [MaxStringByteCount(2, "Unicode")]
+    [MaxStringByteCount(30, "UTF-8")]
     public string Nickname;
     partial void MaterializeUser(Frame frame, ref Quantum.PlayerState result, in PrototypeMaterializationContext context);
     public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
@@ -136,7 +136,7 @@ namespace Quantum.Prototypes {
         result.Team = this.Team;
         result.SpawnPosition = this.SpawnPosition;
         result.ShootIndicator = this.ShootIndicator;
-        PrototypeValidator.AssignQString(this.Nickname, 4, in context, out result.Nickname);
+        PrototypeValidator.AssignQStringUtf8(this.Nickname, 32, in context, out result.Nickname);
         MaterializeUser(frame, ref result, in context);
     }
   }
