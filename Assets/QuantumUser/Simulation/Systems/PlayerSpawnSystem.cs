@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace Quantum
 {
     using Photon.Deterministic;
@@ -8,6 +10,23 @@ namespace Quantum
     {
         public void OnPlayerAdded(Frame f, PlayerRef player, bool firstTime)
         {
+            var playerData = f.GetPlayerData(player);
+            var nickname = playerData.PlayerNickname;
+
+            if (f.Unsafe.TryGetPointerSingleton<PlayerList>(out var playerList))
+            {
+                var playerStates = f.ResolveList(playerList->PlayerStates);
+
+                var playerState = new PlayerState
+                {
+                    Player = player,
+                    Nickname = nickname,
+                    Team = Team.Spec,
+                };
+                playerStates.Add(playerState);
+                f.Events.OnPlayerJoined(player);
+            }
+            
             // Direct reference to runtime config on debug on scene
             var data = f.RuntimeConfig.DefaultPlayerAvatar;
             var entityPrototypeAsset = f.FindAsset(data);

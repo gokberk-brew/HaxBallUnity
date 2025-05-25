@@ -516,6 +516,72 @@ namespace Quantum {
     }
   }
   [StructLayout(LayoutKind.Explicit)]
+  [System.SerializableAttribute()]
+  public unsafe partial struct QString4 : IQString, System.IEquatable<QString4> {
+    public const Int32 SIZE = 4;
+    public const Int32 ALIGNMENT = 4;
+    [FieldOffset(0)]
+    public UInt16 ByteCount;
+    [FieldOffset(2)]
+    [FixedBufferDynamicLength("ByteCount")]
+    public fixed Byte Bytes[2];
+    public const int MaxByteCount = 2;
+    public QString4(String str) {
+      QString.ConstructFrom(str, MaxByteCount, out this);
+    }
+    public int Length {
+      get {
+        return QString.GetLength(ref this);
+      }
+    }
+    public override System.String ToString() {
+      return QString.GetString(ref this);
+    }
+    public static Boolean CanHold(String str) {
+      return QString.CanHold(str, MaxByteCount);
+    }
+    Int32 IQString.CompareOrdinal(byte* bytes, UInt16 byteCount) {
+      return QString.CompareOrdinal(ref this, bytes, byteCount);
+    }
+    public Int32 CompareOrdinal(String str) {
+      return QString.CompareOrdinal(ref this, str);
+    }
+    public static implicit operator QString4(String str) {
+      return new QString4(str);
+    }
+    public static implicit operator String(QString4 str) {
+      return str.ToString();
+    }
+    public override Boolean Equals(Object obj) {
+      return QString.AreEqual(ref this, obj);
+    }
+    public Boolean Equals(QString4 str) {
+      return QString.CompareOrdinal(ref this, str.Bytes, str.ByteCount) == 0;
+    }
+    public Boolean Equals<T>(ref T str)
+      where T : unmanaged, IQString {
+      return QString.CompareOrdinal(ref this, ref str) == 0;
+    }
+    public Int32 CompareOrdinal<T>(ref T str)
+      where T : unmanaged, IQString {
+      return QString.CompareOrdinal(ref this, ref str);
+    }
+    public override Int32 GetHashCode() {
+      unchecked { 
+        var hash = 17623;
+        hash = hash * 31 + ByteCount.GetHashCode();
+        fixed (Byte* p = Bytes) hash = hash * 31 + HashCodeUtils.GetArrayHashCode(p, this.ByteCount);
+        return hash;
+      }
+    }
+    public static void Serialize(void* ptr, FrameSerializer serializer) {
+        var p = (QString4*)ptr;
+        serializer.Stream.Serialize(&p->ByteCount);
+        Assert.Always(p->ByteCount <= 2, p->ByteCount);
+        serializer.Stream.SerializeBuffer(&p->Bytes[0], p->ByteCount);
+    }
+  }
+  [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct Input {
     public const Int32 SIZE = 32;
     public const Int32 ALIGNMENT = 8;
@@ -657,17 +723,44 @@ namespace Quantum {
     }
   }
   [StructLayout(LayoutKind.Explicit)]
+  public unsafe partial struct PlayerList : Quantum.IComponentSingleton {
+    public const Int32 SIZE = 4;
+    public const Int32 ALIGNMENT = 4;
+    [FieldOffset(0)]
+    public QListPtr<PlayerState> PlayerStates;
+    public override Int32 GetHashCode() {
+      unchecked { 
+        var hash = 997;
+        hash = hash * 31 + PlayerStates.GetHashCode();
+        return hash;
+      }
+    }
+    public void ClearPointers(FrameBase f, EntityRef entity) {
+      PlayerStates = default;
+    }
+    public static void OnRemoved(FrameBase frame, EntityRef entity, void* ptr) {
+      var p = (Quantum.PlayerList*)ptr;
+      p->ClearPointers((Frame)frame, entity);
+    }
+    public static void Serialize(void* ptr, FrameSerializer serializer) {
+        var p = (PlayerList*)ptr;
+        QList.Serialize(&p->PlayerStates, serializer, Statics.SerializePlayerState);
+    }
+  }
+  [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct PlayerState : Quantum.IComponent {
     public const Int32 SIZE = 32;
     public const Int32 ALIGNMENT = 8;
     [FieldOffset(0)]
     public PlayerRef Player;
-    [FieldOffset(8)]
+    [FieldOffset(12)]
     public Team Team;
     [FieldOffset(16)]
     public FPVector2 SpawnPosition;
     [FieldOffset(4)]
     public QBoolean ShootIndicator;
+    [FieldOffset(8)]
+    public QString4 Nickname;
     public override Int32 GetHashCode() {
       unchecked { 
         var hash = 14699;
@@ -675,6 +768,7 @@ namespace Quantum {
         hash = hash * 31 + (Int32)Team;
         hash = hash * 31 + SpawnPosition.GetHashCode();
         hash = hash * 31 + ShootIndicator.GetHashCode();
+        hash = hash * 31 + Nickname.GetHashCode();
         return hash;
       }
     }
@@ -682,6 +776,7 @@ namespace Quantum {
         var p = (PlayerState*)ptr;
         PlayerRef.Serialize(&p->Player, serializer);
         QBoolean.Serialize(&p->ShootIndicator, serializer);
+        Quantum.QString4.Serialize(&p->Nickname, serializer);
         serializer.Stream.Serialize((Int32*)&p->Team);
         FPVector2.Serialize(&p->SpawnPosition, serializer);
     }
@@ -810,6 +905,8 @@ namespace Quantum {
       BuildSignalsArrayOnComponentRemoved<PhysicsJoints3D>();
       BuildSignalsArrayOnComponentAdded<Quantum.PlayerLink>();
       BuildSignalsArrayOnComponentRemoved<Quantum.PlayerLink>();
+      BuildSignalsArrayOnComponentAdded<Quantum.PlayerList>();
+      BuildSignalsArrayOnComponentRemoved<Quantum.PlayerList>();
       BuildSignalsArrayOnComponentAdded<Quantum.PlayerState>();
       BuildSignalsArrayOnComponentRemoved<Quantum.PlayerState>();
       BuildSignalsArrayOnComponentAdded<Quantum.PlayerTag>();
@@ -848,8 +945,10 @@ namespace Quantum {
     }
   }
   public unsafe partial class Statics {
+    public static FrameSerializer.Delegate SerializePlayerState;
     public static FrameSerializer.Delegate SerializeInput;
     static partial void InitStaticDelegatesGen() {
+      SerializePlayerState = Quantum.PlayerState.Serialize;
       SerializeInput = Quantum.Input.Serialize;
     }
     static partial void RegisterSimulationTypesGen(TypeRegistry typeRegistry) {
@@ -922,12 +1021,14 @@ namespace Quantum {
       typeRegistry.Register(typeof(PhysicsQueryRef), PhysicsQueryRef.SIZE);
       typeRegistry.Register(typeof(PhysicsSceneSettings), PhysicsSceneSettings.SIZE);
       typeRegistry.Register(typeof(Quantum.PlayerLink), Quantum.PlayerLink.SIZE);
+      typeRegistry.Register(typeof(Quantum.PlayerList), Quantum.PlayerList.SIZE);
       typeRegistry.Register(typeof(PlayerRef), PlayerRef.SIZE);
       typeRegistry.Register(typeof(Quantum.PlayerState), Quantum.PlayerState.SIZE);
       typeRegistry.Register(typeof(Quantum.PlayerTag), Quantum.PlayerTag.SIZE);
       typeRegistry.Register(typeof(Ptr), Ptr.SIZE);
       typeRegistry.Register(typeof(Quantum.PuckTag), Quantum.PuckTag.SIZE);
       typeRegistry.Register(typeof(QBoolean), QBoolean.SIZE);
+      typeRegistry.Register(typeof(Quantum.QString4), Quantum.QString4.SIZE);
       typeRegistry.Register(typeof(Quantum.Ptr), Quantum.Ptr.SIZE);
       typeRegistry.Register(typeof(QueryOptions), 2);
       typeRegistry.Register(typeof(RNGSession), RNGSession.SIZE);
@@ -944,10 +1045,11 @@ namespace Quantum {
       typeRegistry.Register(typeof(Quantum._globals_), Quantum._globals_.SIZE);
     }
     static partial void InitComponentTypeIdGen() {
-      ComponentTypeId.Reset(ComponentTypeId.BuiltInComponentCount + 6)
+      ComponentTypeId.Reset(ComponentTypeId.BuiltInComponentCount + 7)
         .AddBuiltInComponents()
         .Add<Quantum.Goal>(Quantum.Goal.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.PlayerLink>(Quantum.PlayerLink.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.PlayerList>(Quantum.PlayerList.Serialize, null, Quantum.PlayerList.OnRemoved, ComponentFlags.Singleton)
         .Add<Quantum.PlayerState>(Quantum.PlayerState.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.PlayerTag>(Quantum.PlayerTag.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.PuckTag>(Quantum.PuckTag.Serialize, null, null, ComponentFlags.None)
@@ -959,6 +1061,7 @@ namespace Quantum {
       FramePrinter.EnsureNotStripped();
       FramePrinter.EnsurePrimitiveNotStripped<CallbackFlags>();
       FramePrinter.EnsurePrimitiveNotStripped<Quantum.InputButtons>();
+      FramePrinter.EnsurePrimitiveNotStripped<Quantum.QString4>();
       FramePrinter.EnsurePrimitiveNotStripped<QueryOptions>();
       FramePrinter.EnsurePrimitiveNotStripped<Quantum.Team>();
     }

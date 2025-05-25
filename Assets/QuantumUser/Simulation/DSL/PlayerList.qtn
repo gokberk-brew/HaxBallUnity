@@ -1,0 +1,4 @@
+singleton component PlayerList{
+    
+    list<PlayerState> PlayerStates;
+}

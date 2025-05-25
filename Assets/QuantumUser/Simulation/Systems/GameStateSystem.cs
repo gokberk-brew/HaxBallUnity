@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Quantum.Collections;
 using UnityEngine.SocialPlatforms.Impl;
 
 namespace Quantum
@@ -17,6 +19,11 @@ namespace Quantum
                 IsGoalPending = false,
                 RespawnCountdown = 120,
                 GameEnded = false
+            });
+
+            var playerStateList = f.AllocateList<PlayerState>();
+            f.SetSingleton(new PlayerList{
+                PlayerStates = playerStateList,
             });
         }
 
