@@ -49,7 +49,7 @@ namespace Quantum {
   using RuntimeInitializeOnLoadMethodAttribute = UnityEngine.RuntimeInitializeOnLoadMethodAttribute;
   #endif //;
   
-  public enum Team : int {
+  public enum Team : byte {
     Spec,
     Left,
     Right,
@@ -689,19 +689,21 @@ namespace Quantum {
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct Goal : Quantum.IComponent {
     public const Int32 SIZE = 4;
-    public const Int32 ALIGNMENT = 4;
+    public const Int32 ALIGNMENT = 1;
+    [FieldOffset(1)]
+    private fixed Byte _alignment_padding_[3];
     [FieldOffset(0)]
     public Team Team;
     public override Int32 GetHashCode() {
       unchecked { 
         var hash = 16223;
-        hash = hash * 31 + (Int32)Team;
+        hash = hash * 31 + (Byte)Team;
         return hash;
       }
     }
     public static void Serialize(void* ptr, FrameSerializer serializer) {
         var p = (Goal*)ptr;
-        serializer.Stream.Serialize((Int32*)&p->Team);
+        serializer.Stream.Serialize((Byte*)&p->Team);
     }
   }
   [StructLayout(LayoutKind.Explicit)]
@@ -751,13 +753,13 @@ namespace Quantum {
   public unsafe partial struct PlayerState : Quantum.IComponent {
     public const Int32 SIZE = 64;
     public const Int32 ALIGNMENT = 8;
-    [FieldOffset(0)]
+    [FieldOffset(4)]
     public PlayerRef Player;
-    [FieldOffset(8)]
+    [FieldOffset(0)]
     public Team Team;
     [FieldOffset(16)]
     public FPVector2 SpawnPosition;
-    [FieldOffset(4)]
+    [FieldOffset(8)]
     public QBoolean ShootIndicator;
     [FieldOffset(32)]
     public QStringUtf8_32 Nickname;
@@ -765,7 +767,7 @@ namespace Quantum {
       unchecked { 
         var hash = 14699;
         hash = hash * 31 + Player.GetHashCode();
-        hash = hash * 31 + (Int32)Team;
+        hash = hash * 31 + (Byte)Team;
         hash = hash * 31 + SpawnPosition.GetHashCode();
         hash = hash * 31 + ShootIndicator.GetHashCode();
         hash = hash * 31 + Nickname.GetHashCode();
@@ -774,9 +776,9 @@ namespace Quantum {
     }
     public static void Serialize(void* ptr, FrameSerializer serializer) {
         var p = (PlayerState*)ptr;
+        serializer.Stream.Serialize((Byte*)&p->Team);
         PlayerRef.Serialize(&p->Player, serializer);
         QBoolean.Serialize(&p->ShootIndicator, serializer);
-        serializer.Stream.Serialize((Int32*)&p->Team);
         FPVector2.Serialize(&p->SpawnPosition, serializer);
         Quantum.QStringUtf8_32.Serialize(&p->Nickname, serializer);
     }
@@ -817,19 +819,19 @@ namespace Quantum {
   public unsafe partial struct ScoreState : Quantum.IComponentSingleton {
     public const Int32 SIZE = 28;
     public const Int32 ALIGNMENT = 4;
-    [FieldOffset(4)]
-    public Int32 ScoreLeft;
-    [FieldOffset(12)]
-    public Int32 ScoreRight;
     [FieldOffset(8)]
-    public Int32 ScoreLimit;
+    public Int32 ScoreLeft;
     [FieldOffset(16)]
-    public QBoolean GameEnded;
-    [FieldOffset(24)]
-    public Team WinningTeam;
+    public Int32 ScoreRight;
+    [FieldOffset(12)]
+    public Int32 ScoreLimit;
     [FieldOffset(20)]
-    public QBoolean IsGoalPending;
+    public QBoolean GameEnded;
     [FieldOffset(0)]
+    public Team WinningTeam;
+    [FieldOffset(24)]
+    public QBoolean IsGoalPending;
+    [FieldOffset(4)]
     public Int32 RespawnCountdown;
     public override Int32 GetHashCode() {
       unchecked { 
@@ -838,7 +840,7 @@ namespace Quantum {
         hash = hash * 31 + ScoreRight.GetHashCode();
         hash = hash * 31 + ScoreLimit.GetHashCode();
         hash = hash * 31 + GameEnded.GetHashCode();
-        hash = hash * 31 + (Int32)WinningTeam;
+        hash = hash * 31 + (Byte)WinningTeam;
         hash = hash * 31 + IsGoalPending.GetHashCode();
         hash = hash * 31 + RespawnCountdown.GetHashCode();
         return hash;
@@ -846,13 +848,13 @@ namespace Quantum {
     }
     public static void Serialize(void* ptr, FrameSerializer serializer) {
         var p = (ScoreState*)ptr;
+        serializer.Stream.Serialize((Byte*)&p->WinningTeam);
         serializer.Stream.Serialize(&p->RespawnCountdown);
         serializer.Stream.Serialize(&p->ScoreLeft);
         serializer.Stream.Serialize(&p->ScoreLimit);
         serializer.Stream.Serialize(&p->ScoreRight);
         QBoolean.Serialize(&p->GameEnded, serializer);
         QBoolean.Serialize(&p->IsGoalPending, serializer);
-        serializer.Stream.Serialize((Int32*)&p->WinningTeam);
     }
   }
   public static unsafe partial class Constants {
@@ -1037,7 +1039,7 @@ namespace Quantum {
       typeRegistry.Register(typeof(Shape3D), Shape3D.SIZE);
       typeRegistry.Register(typeof(SpringJoint), SpringJoint.SIZE);
       typeRegistry.Register(typeof(SpringJoint3D), SpringJoint3D.SIZE);
-      typeRegistry.Register(typeof(Quantum.Team), 4);
+      typeRegistry.Register(typeof(Quantum.Team), 1);
       typeRegistry.Register(typeof(Transform2D), Transform2D.SIZE);
       typeRegistry.Register(typeof(Transform2DVertical), Transform2DVertical.SIZE);
       typeRegistry.Register(typeof(Transform3D), Transform3D.SIZE);

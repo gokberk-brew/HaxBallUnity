@@ -3,7 +3,7 @@ component PuckTag {}
 component Goal{
     Team Team;
 }
-enum Team {
+enum Team : Byte{
     Spec,
     Left,
     Right

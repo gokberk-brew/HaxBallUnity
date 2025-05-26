@@ -52,7 +52,7 @@ namespace Quantum.Prototypes {
   [System.SerializableAttribute()]
   [Quantum.Prototypes.Prototype(typeof(Quantum.Goal))]
   public unsafe partial class GoalPrototype : ComponentPrototype<Quantum.Goal> {
-    public Quantum.QEnum32<Team> Team;
+    public Quantum.QEnum8<Team> Team;
     partial void MaterializeUser(Frame frame, ref Quantum.Goal result, in PrototypeMaterializationContext context);
     public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
         Quantum.Goal component = default;
@@ -120,7 +120,7 @@ namespace Quantum.Prototypes {
   [Quantum.Prototypes.Prototype(typeof(Quantum.PlayerState))]
   public unsafe partial class PlayerStatePrototype : ComponentPrototype<Quantum.PlayerState> {
     public PlayerRef Player;
-    public Quantum.QEnum32<Team> Team;
+    public Quantum.QEnum8<Team> Team;
     public FPVector2 SpawnPosition;
     public QBoolean ShootIndicator;
     [MaxStringByteCount(30, "UTF-8")]
@@ -177,7 +177,7 @@ namespace Quantum.Prototypes {
     public Int32 ScoreRight;
     public Int32 ScoreLimit;
     public QBoolean GameEnded;
-    public Quantum.QEnum32<Team> WinningTeam;
+    public Quantum.QEnum8<Team> WinningTeam;
     public QBoolean IsGoalPending;
     public Int32 RespawnCountdown;
     partial void MaterializeUser(Frame frame, ref Quantum.ScoreState result, in PrototypeMaterializationContext context);
