@@ -10,14 +10,14 @@ namespace Quantum
     {
         public void OnTriggerEnter2D(Frame f, TriggerInfo2D info)
         {
-            if (!f.Has<Goal>(info.Entity))
+            if (!f.Has<GoalPostTag>(info.Entity))
                 return; // not a goal trigger — skip
 
             if (!f.Has<PuckTag>(info.Other))
                 return; // not a puck — skip
 
-            var goal = f.Get<Goal>(info.Entity);
-            var scoringTeam = goal.Team == Team.Left ? Team.Right : Team.Left;
+            var goal = f.Get<GoalPostTag>(info.Entity);
+            var scoringTeam = goal.Side == GoalPostSide.Left ? Team.Right : Team.Left;
             ScoreGoal(f, scoringTeam);
         }
         

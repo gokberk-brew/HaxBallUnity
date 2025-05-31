@@ -29,11 +29,11 @@ namespace Quantum
             
             //TODO: Create player entity
             // Direct reference to runtime config on debug on scene
-            // var data = f.RuntimeConfig.DefaultPlayerAvatar;
-            // var entityPrototypeAsset = f.FindAsset(data);
-            // var playerEntity = f.Create(entityPrototypeAsset);
-            // f.Add(playerEntity, new PlayerLink { PlayerRef = player });
-            // AssignToTeam(f, playerEntity, player);
+            var data = f.RuntimeConfig.DefaultPlayerAvatar;
+            var entityPrototypeAsset = f.FindAsset(data);
+            var playerEntity = f.Create(entityPrototypeAsset);
+            f.Add(playerEntity, new PlayerLink { PlayerRef = player });
+            AssignToTeam(f, playerEntity, player);
         }
 
         private void AssignToTeam(Frame frame, EntityRef playerEntity, PlayerRef player)

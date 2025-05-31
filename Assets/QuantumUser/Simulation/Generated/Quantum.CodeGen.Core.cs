@@ -49,6 +49,10 @@ namespace Quantum {
   using RuntimeInitializeOnLoadMethodAttribute = UnityEngine.RuntimeInitializeOnLoadMethodAttribute;
   #endif //;
   
+  public enum GoalPostSide : byte {
+    Left,
+    Right,
+  }
   public enum Team : byte {
     Spec,
     Left,
@@ -687,23 +691,23 @@ namespace Quantum {
     }
   }
   [StructLayout(LayoutKind.Explicit)]
-  public unsafe partial struct Goal : Quantum.IComponent {
+  public unsafe partial struct GoalPostTag : Quantum.IComponent {
     public const Int32 SIZE = 4;
     public const Int32 ALIGNMENT = 1;
     [FieldOffset(1)]
     private fixed Byte _alignment_padding_[3];
     [FieldOffset(0)]
-    public Team Team;
+    public GoalPostSide Side;
     public override Int32 GetHashCode() {
       unchecked { 
-        var hash = 16223;
-        hash = hash * 31 + (Byte)Team;
+        var hash = 20149;
+        hash = hash * 31 + (Byte)Side;
         return hash;
       }
     }
     public static void Serialize(void* ptr, FrameSerializer serializer) {
-        var p = (Goal*)ptr;
-        serializer.Stream.Serialize((Byte*)&p->Team);
+        var p = (GoalPostTag*)ptr;
+        serializer.Stream.Serialize((Byte*)&p->Side);
     }
   }
   [StructLayout(LayoutKind.Explicit)]
@@ -877,8 +881,8 @@ namespace Quantum {
       BuildSignalsArrayOnComponentRemoved<CharacterController2D>();
       BuildSignalsArrayOnComponentAdded<CharacterController3D>();
       BuildSignalsArrayOnComponentRemoved<CharacterController3D>();
-      BuildSignalsArrayOnComponentAdded<Quantum.Goal>();
-      BuildSignalsArrayOnComponentRemoved<Quantum.Goal>();
+      BuildSignalsArrayOnComponentAdded<Quantum.GoalPostTag>();
+      BuildSignalsArrayOnComponentRemoved<Quantum.GoalPostTag>();
       BuildSignalsArrayOnComponentAdded<MapEntityLink>();
       BuildSignalsArrayOnComponentRemoved<MapEntityLink>();
       BuildSignalsArrayOnComponentAdded<NavMeshAvoidanceAgent>();
@@ -985,7 +989,8 @@ namespace Quantum {
       typeRegistry.Register(typeof(FPVector3), FPVector3.SIZE);
       typeRegistry.Register(typeof(FrameMetaData), FrameMetaData.SIZE);
       typeRegistry.Register(typeof(FrameTimer), FrameTimer.SIZE);
-      typeRegistry.Register(typeof(Quantum.Goal), Quantum.Goal.SIZE);
+      typeRegistry.Register(typeof(Quantum.GoalPostSide), 1);
+      typeRegistry.Register(typeof(Quantum.GoalPostTag), Quantum.GoalPostTag.SIZE);
       typeRegistry.Register(typeof(HingeJoint), HingeJoint.SIZE);
       typeRegistry.Register(typeof(HingeJoint3D), HingeJoint3D.SIZE);
       typeRegistry.Register(typeof(Hit), Hit.SIZE);
@@ -1049,7 +1054,7 @@ namespace Quantum {
     static partial void InitComponentTypeIdGen() {
       ComponentTypeId.Reset(ComponentTypeId.BuiltInComponentCount + 7)
         .AddBuiltInComponents()
-        .Add<Quantum.Goal>(Quantum.Goal.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.GoalPostTag>(Quantum.GoalPostTag.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.PlayerLink>(Quantum.PlayerLink.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.PlayerState>(Quantum.PlayerState.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.PlayerStateSingleton>(Quantum.PlayerStateSingleton.Serialize, null, Quantum.PlayerStateSingleton.OnRemoved, ComponentFlags.Singleton)
@@ -1062,6 +1067,7 @@ namespace Quantum {
     public static void EnsureNotStrippedGen() {
       FramePrinter.EnsureNotStripped();
       FramePrinter.EnsurePrimitiveNotStripped<CallbackFlags>();
+      FramePrinter.EnsurePrimitiveNotStripped<Quantum.GoalPostSide>();
       FramePrinter.EnsurePrimitiveNotStripped<Quantum.InputButtons>();
       FramePrinter.EnsurePrimitiveNotStripped<Quantum.QStringUtf8_32>();
       FramePrinter.EnsurePrimitiveNotStripped<QueryOptions>();

@@ -50,17 +50,17 @@ namespace Quantum.Prototypes {
   #endif //;
   
   [System.SerializableAttribute()]
-  [Quantum.Prototypes.Prototype(typeof(Quantum.Goal))]
-  public unsafe partial class GoalPrototype : ComponentPrototype<Quantum.Goal> {
-    public Quantum.QEnum8<Team> Team;
-    partial void MaterializeUser(Frame frame, ref Quantum.Goal result, in PrototypeMaterializationContext context);
+  [Quantum.Prototypes.Prototype(typeof(Quantum.GoalPostTag))]
+  public unsafe partial class GoalPostTagPrototype : ComponentPrototype<Quantum.GoalPostTag> {
+    public Quantum.QEnum8<GoalPostSide> Side;
+    partial void MaterializeUser(Frame frame, ref Quantum.GoalPostTag result, in PrototypeMaterializationContext context);
     public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
-        Quantum.Goal component = default;
+        Quantum.GoalPostTag component = default;
         Materialize((Frame)f, ref component, in context);
         return f.Set(entity, component) == SetResult.ComponentAdded;
     }
-    public void Materialize(Frame frame, ref Quantum.Goal result, in PrototypeMaterializationContext context = default) {
-        result.Team = this.Team;
+    public void Materialize(Frame frame, ref Quantum.GoalPostTag result, in PrototypeMaterializationContext context = default) {
+        result.Side = this.Side;
         MaterializeUser(frame, ref result, in context);
     }
   }
