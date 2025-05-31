@@ -66,6 +66,7 @@ public class LobbyUIHandler : MonoBehaviour
             var playerUI = Instantiate(playerUIPrefab, SpectatorContainer);
             playerUI.Init(playerState.Nickname, playerState.Player);
             playerUIList.Add(playerUI);
+            AssignTeam(playerUI, playerState.Team);
         }
     }
 

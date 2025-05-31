@@ -6,7 +6,7 @@ namespace Quantum
     using UnityEngine.Scripting;
 
     [Preserve]
-    public unsafe class PlayerSpawnSystem : SystemSignalsOnly, ISignalOnPlayerAdded,ISignalOnPlayerDisconnected, ISignalOnPlayerTeamUpdated
+    public unsafe class PlayerSpawnSystem : SystemSignalsOnly, ISignalOnPlayerAdded,ISignalOnPlayerRemoved,ISignalOnPlayerDisconnected, ISignalOnPlayerTeamUpdated
     {
         public void OnPlayerAdded(Frame f, PlayerRef player, bool firstTime)
         {
@@ -79,6 +79,31 @@ namespace Quantum
                 {
                     f.Destroy(entityRef);
                     Log.Info($"Player entity removed for PlayerRef: {player}");
+                }
+            }
+        }
+
+        public void OnPlayerRemoved(Frame f, PlayerRef player)
+        {
+            if (f.Unsafe.TryGetPointerSingleton<PlayerStateSingleton>(out var singleton))
+            {
+                var list = f.ResolveList(singleton->List);
+
+                for (int i = 0; i < list.Count; i++)
+                {
+                    if (list[i].Player == player)
+                    {
+                        list.RemoveAt(i);
+                        Log.Info($"[Quantum] Removed PlayerRef {player} from PlayerStateSingleton.List");
+                        break;
+                    }
+                }
+
+                if (list.Count == 0)
+                {
+                    f.FreeList(singleton->List);
+                    singleton->List = default;
+                    Log.Info("[Quantum] All players removed — PlayerStateSingleton.List freed.");
                 }
             }
         }
