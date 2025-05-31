@@ -13,9 +13,9 @@ namespace Quantum
             var playerData = f.GetPlayerData(player);
             var nickname = playerData.PlayerNickname;
 
-            if (f.Unsafe.TryGetPointerSingleton<PlayerList>(out var playerList))
+            if (f.Unsafe.TryGetPointerSingleton<PlayerStateSingleton>(out var playerList))
             {
-                var playerStates = f.ResolveList(playerList->PlayerStates);
+                var playerStates = f.ResolveList(playerList->List);
 
                 var playerState = new PlayerState
                 {
@@ -27,12 +27,13 @@ namespace Quantum
                 f.Events.OnPlayerJoined(player);
             }
             
+            //TODO: Create player entity
             // Direct reference to runtime config on debug on scene
-            var data = f.RuntimeConfig.DefaultPlayerAvatar;
-            var entityPrototypeAsset = f.FindAsset(data);
-            var playerEntity = f.Create(entityPrototypeAsset);
-            f.Add(playerEntity, new PlayerLink { PlayerRef = player });
-            AssignToTeam(f, playerEntity, player);
+            // var data = f.RuntimeConfig.DefaultPlayerAvatar;
+            // var entityPrototypeAsset = f.FindAsset(data);
+            // var playerEntity = f.Create(entityPrototypeAsset);
+            // f.Add(playerEntity, new PlayerLink { PlayerRef = player });
+            // AssignToTeam(f, playerEntity, player);
         }
 
         private void AssignToTeam(Frame frame, EntityRef playerEntity, PlayerRef player)

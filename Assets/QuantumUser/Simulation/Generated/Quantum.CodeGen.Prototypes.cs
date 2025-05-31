@@ -92,31 +92,6 @@ namespace Quantum.Prototypes {
     }
   }
   [System.SerializableAttribute()]
-  [Quantum.Prototypes.Prototype(typeof(Quantum.PlayerList))]
-  public unsafe partial class PlayerListPrototype : ComponentPrototype<Quantum.PlayerList> {
-    [DynamicCollectionAttribute()]
-    public Quantum.Prototypes.PlayerStatePrototype[] PlayerStates = {};
-    partial void MaterializeUser(Frame frame, ref Quantum.PlayerList result, in PrototypeMaterializationContext context);
-    public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
-        Quantum.PlayerList component = default;
-        Materialize((Frame)f, ref component, in context);
-        return f.Set(entity, component) == SetResult.ComponentAdded;
-    }
-    public void Materialize(Frame frame, ref Quantum.PlayerList result, in PrototypeMaterializationContext context = default) {
-        if (this.PlayerStates.Length == 0) {
-          result.PlayerStates = default;
-        } else {
-          var list = frame.AllocateList(out result.PlayerStates, this.PlayerStates.Length);
-          for (int i = 0; i < this.PlayerStates.Length; ++i) {
-            Quantum.PlayerState tmp = default;
-            this.PlayerStates[i].Materialize(frame, ref tmp, in context);
-            list.Add(tmp);
-          }
-        }
-        MaterializeUser(frame, ref result, in context);
-    }
-  }
-  [System.SerializableAttribute()]
   [Quantum.Prototypes.Prototype(typeof(Quantum.PlayerState))]
   public unsafe partial class PlayerStatePrototype : ComponentPrototype<Quantum.PlayerState> {
     public PlayerRef Player;
@@ -137,6 +112,31 @@ namespace Quantum.Prototypes {
         result.SpawnPosition = this.SpawnPosition;
         result.ShootIndicator = this.ShootIndicator;
         PrototypeValidator.AssignQStringUtf8(this.Nickname, 32, in context, out result.Nickname);
+        MaterializeUser(frame, ref result, in context);
+    }
+  }
+  [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.PlayerStateSingleton))]
+  public unsafe partial class PlayerStateSingletonPrototype : ComponentPrototype<Quantum.PlayerStateSingleton> {
+    [DynamicCollectionAttribute()]
+    public Quantum.Prototypes.PlayerStatePrototype[] List = {};
+    partial void MaterializeUser(Frame frame, ref Quantum.PlayerStateSingleton result, in PrototypeMaterializationContext context);
+    public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
+        Quantum.PlayerStateSingleton component = default;
+        Materialize((Frame)f, ref component, in context);
+        return f.Set(entity, component) == SetResult.ComponentAdded;
+    }
+    public void Materialize(Frame frame, ref Quantum.PlayerStateSingleton result, in PrototypeMaterializationContext context = default) {
+        if (this.List.Length == 0) {
+          result.List = default;
+        } else {
+          var list = frame.AllocateList(out result.List, this.List.Length);
+          for (int i = 0; i < this.List.Length; ++i) {
+            Quantum.PlayerState tmp = default;
+            this.List[i].Materialize(frame, ref tmp, in context);
+            list.Add(tmp);
+          }
+        }
         MaterializeUser(frame, ref result, in context);
     }
   }

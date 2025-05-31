@@ -1,4 +1,4 @@
-singleton component PlayerList{
+singleton component PlayerStateSingleton{
     
-    list<PlayerState> PlayerStates;
+    list<PlayerState> List;
 }

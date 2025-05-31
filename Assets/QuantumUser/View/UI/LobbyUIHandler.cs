@@ -24,8 +24,8 @@ public class LobbyUIHandler : MonoBehaviour
         var game = QuantumRunner.Default.Game;
         var frame = game.Frames.Verified;
         
-        var playerList = frame.GetSingleton<PlayerList>();
-        var resolvedList = frame.ResolveList(playerList.PlayerStates);
+        var playerList = frame.GetSingleton<PlayerStateSingleton>();
+        var resolvedList = frame.ResolveList(playerList.List);
 
         foreach (var playerState in resolvedList)
         {

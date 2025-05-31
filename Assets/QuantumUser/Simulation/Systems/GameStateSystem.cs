@@ -22,8 +22,8 @@ namespace Quantum
             });
 
             var playerStateList = f.AllocateList<PlayerState>();
-            f.SetSingleton(new PlayerList{
-                PlayerStates = playerStateList,
+            f.SetSingleton(new PlayerStateSingleton(){
+                List = playerStateList,
             });
         }
 

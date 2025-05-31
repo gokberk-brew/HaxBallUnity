@@ -725,31 +725,6 @@ namespace Quantum {
     }
   }
   [StructLayout(LayoutKind.Explicit)]
-  public unsafe partial struct PlayerList : Quantum.IComponentSingleton {
-    public const Int32 SIZE = 4;
-    public const Int32 ALIGNMENT = 4;
-    [FieldOffset(0)]
-    public QListPtr<PlayerState> PlayerStates;
-    public override Int32 GetHashCode() {
-      unchecked { 
-        var hash = 997;
-        hash = hash * 31 + PlayerStates.GetHashCode();
-        return hash;
-      }
-    }
-    public void ClearPointers(FrameBase f, EntityRef entity) {
-      PlayerStates = default;
-    }
-    public static void OnRemoved(FrameBase frame, EntityRef entity, void* ptr) {
-      var p = (Quantum.PlayerList*)ptr;
-      p->ClearPointers((Frame)frame, entity);
-    }
-    public static void Serialize(void* ptr, FrameSerializer serializer) {
-        var p = (PlayerList*)ptr;
-        QList.Serialize(&p->PlayerStates, serializer, Statics.SerializePlayerState);
-    }
-  }
-  [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct PlayerState : Quantum.IComponent {
     public const Int32 SIZE = 64;
     public const Int32 ALIGNMENT = 8;
@@ -781,6 +756,31 @@ namespace Quantum {
         QBoolean.Serialize(&p->ShootIndicator, serializer);
         FPVector2.Serialize(&p->SpawnPosition, serializer);
         Quantum.QStringUtf8_32.Serialize(&p->Nickname, serializer);
+    }
+  }
+  [StructLayout(LayoutKind.Explicit)]
+  public unsafe partial struct PlayerStateSingleton : Quantum.IComponentSingleton {
+    public const Int32 SIZE = 4;
+    public const Int32 ALIGNMENT = 4;
+    [FieldOffset(0)]
+    public QListPtr<PlayerState> List;
+    public override Int32 GetHashCode() {
+      unchecked { 
+        var hash = 12049;
+        hash = hash * 31 + List.GetHashCode();
+        return hash;
+      }
+    }
+    public void ClearPointers(FrameBase f, EntityRef entity) {
+      List = default;
+    }
+    public static void OnRemoved(FrameBase frame, EntityRef entity, void* ptr) {
+      var p = (Quantum.PlayerStateSingleton*)ptr;
+      p->ClearPointers((Frame)frame, entity);
+    }
+    public static void Serialize(void* ptr, FrameSerializer serializer) {
+        var p = (PlayerStateSingleton*)ptr;
+        QList.Serialize(&p->List, serializer, Statics.SerializePlayerState);
     }
   }
   [StructLayout(LayoutKind.Explicit)]
@@ -907,10 +907,10 @@ namespace Quantum {
       BuildSignalsArrayOnComponentRemoved<PhysicsJoints3D>();
       BuildSignalsArrayOnComponentAdded<Quantum.PlayerLink>();
       BuildSignalsArrayOnComponentRemoved<Quantum.PlayerLink>();
-      BuildSignalsArrayOnComponentAdded<Quantum.PlayerList>();
-      BuildSignalsArrayOnComponentRemoved<Quantum.PlayerList>();
       BuildSignalsArrayOnComponentAdded<Quantum.PlayerState>();
       BuildSignalsArrayOnComponentRemoved<Quantum.PlayerState>();
+      BuildSignalsArrayOnComponentAdded<Quantum.PlayerStateSingleton>();
+      BuildSignalsArrayOnComponentRemoved<Quantum.PlayerStateSingleton>();
       BuildSignalsArrayOnComponentAdded<Quantum.PlayerTag>();
       BuildSignalsArrayOnComponentRemoved<Quantum.PlayerTag>();
       BuildSignalsArrayOnComponentAdded<Quantum.PuckTag>();
@@ -1023,9 +1023,9 @@ namespace Quantum {
       typeRegistry.Register(typeof(PhysicsQueryRef), PhysicsQueryRef.SIZE);
       typeRegistry.Register(typeof(PhysicsSceneSettings), PhysicsSceneSettings.SIZE);
       typeRegistry.Register(typeof(Quantum.PlayerLink), Quantum.PlayerLink.SIZE);
-      typeRegistry.Register(typeof(Quantum.PlayerList), Quantum.PlayerList.SIZE);
       typeRegistry.Register(typeof(PlayerRef), PlayerRef.SIZE);
       typeRegistry.Register(typeof(Quantum.PlayerState), Quantum.PlayerState.SIZE);
+      typeRegistry.Register(typeof(Quantum.PlayerStateSingleton), Quantum.PlayerStateSingleton.SIZE);
       typeRegistry.Register(typeof(Quantum.PlayerTag), Quantum.PlayerTag.SIZE);
       typeRegistry.Register(typeof(Ptr), Ptr.SIZE);
       typeRegistry.Register(typeof(Quantum.PuckTag), Quantum.PuckTag.SIZE);
@@ -1051,8 +1051,8 @@ namespace Quantum {
         .AddBuiltInComponents()
         .Add<Quantum.Goal>(Quantum.Goal.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.PlayerLink>(Quantum.PlayerLink.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.PlayerList>(Quantum.PlayerList.Serialize, null, Quantum.PlayerList.OnRemoved, ComponentFlags.Singleton)
         .Add<Quantum.PlayerState>(Quantum.PlayerState.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.PlayerStateSingleton>(Quantum.PlayerStateSingleton.Serialize, null, Quantum.PlayerStateSingleton.OnRemoved, ComponentFlags.Singleton)
         .Add<Quantum.PlayerTag>(Quantum.PlayerTag.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.PuckTag>(Quantum.PuckTag.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.ScoreState>(Quantum.ScoreState.Serialize, null, null, ComponentFlags.Singleton)

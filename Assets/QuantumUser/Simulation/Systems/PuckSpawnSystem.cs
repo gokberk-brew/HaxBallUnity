@@ -4,14 +4,14 @@ namespace Quantum
     using UnityEngine.Scripting;
 
     [Preserve]
-    public unsafe class BallSpawnSystem : SystemSignalsOnly
+    public unsafe class PuckSpawnSystem : SystemSignalsOnly
     {
         public override void OnInit(Frame f)
         {
             SpawnBall(f);
         }
 
-        public void SpawnBall(Frame f)
+        private void SpawnBall(Frame f)
         {
             HoxBallGameConfig gameConfig = f.FindAsset(f.RuntimeConfig.GameConfig);
             var ball = f.Create(gameConfig.BallPrototype);
