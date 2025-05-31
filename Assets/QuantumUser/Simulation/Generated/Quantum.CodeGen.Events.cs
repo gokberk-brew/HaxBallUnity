@@ -52,7 +52,7 @@ namespace Quantum {
   public unsafe partial class Frame {
     public unsafe partial struct FrameEvents {
       static partial void GetEventTypeCountCodeGen(ref Int32 eventCount) {
-        eventCount = 4;
+        eventCount = 5;
       }
       static partial void GetParentEventIDCodeGen(Int32 eventID, ref Int32 parentEventID) {
         switch (eventID) {
@@ -64,6 +64,7 @@ namespace Quantum {
           case EventOnGoalScored.ID: result = typeof(EventOnGoalScored); return;
           case EventOnPlayerJoined.ID: result = typeof(EventOnPlayerJoined); return;
           case EventOnPlayerLeft.ID: result = typeof(EventOnPlayerLeft); return;
+          case EventOnPlayerChangeTeam.ID: result = typeof(EventOnPlayerChangeTeam); return;
           default: break;
         }
       }
@@ -86,6 +87,13 @@ namespace Quantum {
         if (_f.IsPredicted) return null;
         var ev = _f.Context.AcquireEvent<EventOnPlayerLeft>(EventOnPlayerLeft.ID);
         ev.LeftPlayer = LeftPlayer;
+        _f.AddEvent(ev);
+        return ev;
+      }
+      public EventOnPlayerChangeTeam OnPlayerChangeTeam(PlayerRef PlayerRef, Team Team) {
+        var ev = _f.Context.AcquireEvent<EventOnPlayerChangeTeam>(EventOnPlayerChangeTeam.ID);
+        ev.PlayerRef = PlayerRef;
+        ev.Team = Team;
         _f.AddEvent(ev);
         return ev;
       }
@@ -164,6 +172,33 @@ namespace Quantum {
       unchecked {
         var hash = 47;
         hash = hash * 31 + LeftPlayer.GetHashCode();
+        return hash;
+      }
+    }
+  }
+  public unsafe partial class EventOnPlayerChangeTeam : EventBase {
+    public new const Int32 ID = 4;
+    public PlayerRef PlayerRef;
+    public Team Team;
+    protected EventOnPlayerChangeTeam(Int32 id, EventFlags flags) : 
+        base(id, flags) {
+    }
+    public EventOnPlayerChangeTeam() : 
+        base(4, EventFlags.Server|EventFlags.Client) {
+    }
+    public new QuantumGame Game {
+      get {
+        return (QuantumGame)base.Game;
+      }
+      set {
+        base.Game = value;
+      }
+    }
+    public override Int32 GetHashCode() {
+      unchecked {
+        var hash = 53;
+        hash = hash * 31 + PlayerRef.GetHashCode();
+        hash = hash * 31 + Team.GetHashCode();
         return hash;
       }
     }

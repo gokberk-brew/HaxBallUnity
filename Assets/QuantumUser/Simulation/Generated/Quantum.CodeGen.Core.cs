@@ -861,9 +861,13 @@ namespace Quantum {
         QBoolean.Serialize(&p->IsGoalPending, serializer);
     }
   }
+  public unsafe partial interface ISignalOnPlayerTeamUpdated : ISignal {
+    void OnPlayerTeamUpdated(Frame f, PlayerRef playerRef, Team team);
+  }
   public static unsafe partial class Constants {
   }
   public unsafe partial class Frame {
+    private ISignalOnPlayerTeamUpdated[] _ISignalOnPlayerTeamUpdatedSystems;
     partial void AllocGen() {
       _globals = (_globals_*)Context.Allocator.AllocAndClear(sizeof(_globals_));
     }
@@ -875,6 +879,7 @@ namespace Quantum {
     }
     partial void InitGen() {
       Initialize(this, this.SimulationConfig.Entities, 256);
+      _ISignalOnPlayerTeamUpdatedSystems = BuildSignalsArray<ISignalOnPlayerTeamUpdated>();
       _ComponentSignalsOnAdded = new ComponentReactiveCallbackInvoker[ComponentTypeId.Type.Length];
       _ComponentSignalsOnRemoved = new ComponentReactiveCallbackInvoker[ComponentTypeId.Type.Length];
       BuildSignalsArrayOnComponentAdded<CharacterController2D>();
@@ -948,6 +953,15 @@ namespace Quantum {
       Physics3D.Init(_globals->PhysicsState3D.MapStaticCollidersState.TrackedMap);
     }
     public unsafe partial struct FrameSignals {
+      public void OnPlayerTeamUpdated(PlayerRef playerRef, Team team) {
+        var array = _f._ISignalOnPlayerTeamUpdatedSystems;
+        for (Int32 i = 0; i < array.Length; ++i) {
+          var s = array[i];
+          if (_f.SystemIsEnabledInHierarchy((SystemBase)s)) {
+            s.OnPlayerTeamUpdated(_f, playerRef, team);
+          }
+        }
+      }
     }
   }
   public unsafe partial class Statics {

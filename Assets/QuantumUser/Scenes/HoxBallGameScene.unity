@@ -5348,7 +5348,10 @@ MonoBehaviour:
   RedContainer: {fileID: 1105907243}
   SpectatorContainer: {fileID: 1283601686}
   playerUIPrefab: {fileID: 6264124213013263436, guid: 801f39ed9ad724bb7bc572f4dd8adc5a, type: 3}
-  playerUIs: []
+  playerUIList: []
+  RedButton: {fileID: 182332176}
+  SpecButton: {fileID: 1804825432}
+  BlueButton: {fileID: 1032255299}
 --- !u!1 &1266075545
 GameObject:
   m_ObjectHideFlags: 0

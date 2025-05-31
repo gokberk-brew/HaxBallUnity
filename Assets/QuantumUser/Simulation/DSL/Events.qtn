@@ -10,3 +10,8 @@ synced event OnPlayerJoined{
 synced event OnPlayerLeft{
     player_ref LeftPlayer;
 }
+
+event OnPlayerChangeTeam{
+    player_ref PlayerRef;
+    Team Team;
+}

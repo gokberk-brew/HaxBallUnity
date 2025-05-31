@@ -1,0 +1,1 @@
+signal OnPlayerTeamUpdated (player_ref playerRef, Team team);

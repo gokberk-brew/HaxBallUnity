@@ -6,7 +6,7 @@ namespace Quantum
     using UnityEngine.Scripting;
 
     [Preserve]
-    public unsafe class PlayerSpawnSystem : SystemSignalsOnly, ISignalOnPlayerAdded,ISignalOnPlayerDisconnected
+    public unsafe class PlayerSpawnSystem : SystemSignalsOnly, ISignalOnPlayerAdded,ISignalOnPlayerDisconnected, ISignalOnPlayerTeamUpdated
     {
         public void OnPlayerAdded(Frame f, PlayerRef player, bool firstTime)
         {
@@ -29,12 +29,33 @@ namespace Quantum
             
             //TODO: Create player entity
             // Direct reference to runtime config on debug on scene
-            var data = f.RuntimeConfig.DefaultPlayerAvatar;
-            var entityPrototypeAsset = f.FindAsset(data);
-            var playerEntity = f.Create(entityPrototypeAsset);
-            f.Add(playerEntity, new PlayerLink { PlayerRef = player });
-            AssignToTeam(f, playerEntity, player);
+            // var data = f.RuntimeConfig.DefaultPlayerAvatar;
+            // var entityPrototypeAsset = f.FindAsset(data);
+            // var playerEntity = f.Create(entityPrototypeAsset);
+            // f.Add(playerEntity, new PlayerLink { PlayerRef = player });
+            // AssignToTeam(f, playerEntity, player);
         }
+        
+        public void OnPlayerTeamUpdated(Frame f, PlayerRef playerRef, Team team)
+        {
+            var playerStateSingleton = f.Unsafe.GetPointerSingleton<PlayerStateSingleton>();
+            var playerStates = f.ResolveList(playerStateSingleton->List);
+
+            Log.Info($"[Quantum] Signal received - PlayerStates Count: {playerStates.Count}");
+
+            for (int i = 0; i < playerStates.Count; i++)
+            {
+                if (playerStates[i].Player == playerRef)
+                {
+                    var psPtr = playerStates.GetPointer(i);
+                    psPtr->Team = team;
+                    Log.Info($"[Quantum] Updated Player {playerRef} team to {team}");
+                    f.Events.OnPlayerChangeTeam(playerRef, team);
+                    break;
+                }
+            }
+        }
+
 
         private void AssignToTeam(Frame frame, EntityRef playerEntity, PlayerRef player)
         {
