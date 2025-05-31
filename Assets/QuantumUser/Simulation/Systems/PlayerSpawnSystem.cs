@@ -93,6 +93,8 @@ namespace Quantum
                 {
                     if (list[i].Player == player)
                     {
+                        f.Events.OnPlayerLeft(player);
+                        
                         list.RemoveAt(i);
                         Log.Info($"[Quantum] Removed PlayerRef {player} from PlayerStateSingleton.List");
                         break;

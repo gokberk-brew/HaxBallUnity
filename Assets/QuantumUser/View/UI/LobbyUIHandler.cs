@@ -82,12 +82,12 @@ public class LobbyUIHandler : MonoBehaviour
     
     private void OnPlayerLeft(EventOnPlayerLeft callback)
     {
-        // var playerUI = playerUIs.FirstOrDefault(x => x.PlayerRef == callback.PlayerRef);
-        //
-        // if (playerUI)
-        // {
-        //     playerUIs.Remove(playerUI);
-        //     Destroy(playerUI.gameObject);
-        // }
+        var playerUI = playerUIList.FirstOrDefault(x => x.PlayerRef == callback.LeftPlayer);
+        
+        if (playerUI)
+        {
+            playerUIList.Remove(playerUI);
+            Destroy(playerUI.gameObject);
+        }
     }
 }
