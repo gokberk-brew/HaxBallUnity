@@ -24,16 +24,21 @@ public class LobbyUIHandler : MonoBehaviour
         QuantumEvent.Subscribe<EventOnPlayerJoined>(this, OnPlayerJoined);
         QuantumEvent.Subscribe<EventOnPlayerLeft>(this, OnPlayerLeft);
         QuantumEvent.Subscribe<EventOnPlayerChangeTeam>(this, OnPlayerChangeTeam);
+        QuantumEvent.Subscribe<EventOnGameStarted>(this, OnGameStarted);
         RedButton.onClick.AddListener(() => PlayerTeamUpdateRequest(Team.Left));
         SpecButton.onClick.AddListener(() => PlayerTeamUpdateRequest(Team.Spec));
         BlueButton.onClick.AddListener(() => PlayerTeamUpdateRequest(Team.Right));
-        StartButton.onClick.AddListener(StartGame);
+        StartButton.onClick.AddListener(OnStartGameButtonClicked);
     }
 
-    private void StartGame()
+    private void OnGameStarted(EventOnGameStarted callback)
     {
-        QuantumRunner.Default.Game.SendCommand(new StartCommand());
         gameObject.SetActive(false);
+    }
+
+    private void OnStartGameButtonClicked()
+    {
+        QuantumRunner.Default.Game.SendCommand(new StartGameCommand());
     }
 
     private void OnPlayerChangeTeam(EventOnPlayerChangeTeam callback)

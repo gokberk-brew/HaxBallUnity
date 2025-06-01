@@ -17,7 +17,7 @@ namespace Quantum
                     case ChangeTeamCommand changeTeam:
                         changeTeam.Execute(frame);
                         break;
-                    case StartCommand start:
+                    case StartGameCommand start:
                         start.Execute(frame);
                         break;
                 }

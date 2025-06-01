@@ -3,6 +3,8 @@ synced event OnGoalScored{
     GameState GameState;
 }
 
+synced event OnGameStarted{}
+
 synced event OnPlayerJoined{
    player_ref JoinedPlayer;
 }

@@ -9,7 +9,7 @@
         {
             // Add or remove commands to the collection.
             factories.Add(new DeterministicCommandPool<ChangeTeamCommand>());
-            factories.Add(new DeterministicCommandPool<StartCommand>());
+            factories.Add(new DeterministicCommandPool<StartGameCommand>());
         }
     }
 }

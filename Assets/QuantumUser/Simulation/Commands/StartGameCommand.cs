@@ -6,7 +6,7 @@ using BitStream = Photon.Deterministic.BitStream;
 
 namespace Quantum
 {
-    public class StartCommand : DeterministicCommand
+    public class StartGameCommand : DeterministicCommand
     {
         public override void Serialize(BitStream stream)
         {
