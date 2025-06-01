@@ -25,6 +25,8 @@ namespace Quantum
             f.SetSingleton(new PlayerStateSingleton(){
                 List = playerStateList,
             });
+
+            f.Events.OnSystemInitialized();
         }
         
         public void OnGameStarted(Frame f)
@@ -34,7 +36,6 @@ namespace Quantum
                 SpawnPlayers(f);
                 gameState->IsGameActive = true;
                 f.Events.OnGameStarted();
-                
             }
         }
 
@@ -46,11 +47,14 @@ namespace Quantum
 
                 foreach (var playerState in playerStateList)
                 {
-                     var data = f.RuntimeConfig.DefaultPlayerAvatar;
-                     var entityPrototypeAsset = f.FindAsset(data);
-                     var playerEntity = f.Create(entityPrototypeAsset);
-                     f.Add(playerEntity, new PlayerLink { PlayerRef = playerState.Player });
-                     AssignToTeam(f, playerEntity, playerState);
+                    if(playerState.Team == Team.Spec)
+                        continue;
+                    
+                    var data = f.RuntimeConfig.DefaultPlayerAvatar;
+                    var entityPrototypeAsset = f.FindAsset(data);
+                    var playerEntity = f.Create(entityPrototypeAsset);
+                    f.Add(playerEntity, new PlayerLink { PlayerRef = playerState.Player });
+                    AssignToTeam(f, playerEntity, playerState);
                 }
             }
         }

@@ -11,6 +11,10 @@ public class UIManager : MonoBehaviour
     
     void Start()
     {
+        QuantumEvent.Subscribe<EventOnSystemInitialized>(this, Init);
+    }
+    private void Init(EventOnSystemInitialized callback)
+    {
         var game = QuantumRunner.DefaultGame;
         var frame = game.Frames.Verified;
 

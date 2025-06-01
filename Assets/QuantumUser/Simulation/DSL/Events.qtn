@@ -1,3 +1,5 @@
+synced event OnSystemInitialized{}
+
 synced event OnGoalScored{
     Team ScoredTeam;
     GameState GameState;
