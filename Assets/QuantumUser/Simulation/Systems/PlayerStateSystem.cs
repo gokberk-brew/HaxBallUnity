@@ -6,7 +6,7 @@ namespace Quantum
     using UnityEngine.Scripting;
 
     [Preserve]
-    public unsafe class PlayerSpawnSystem : SystemSignalsOnly, ISignalOnPlayerAdded,ISignalOnPlayerRemoved,ISignalOnPlayerDisconnected, ISignalOnPlayerTeamUpdated
+    public unsafe class PlayerStateSystem : SystemSignalsOnly, ISignalOnPlayerAdded,ISignalOnPlayerRemoved,ISignalOnPlayerDisconnected, ISignalOnPlayerTeamUpdated
     {
         public void OnPlayerAdded(Frame f, PlayerRef player, bool firstTime)
         {
@@ -26,14 +26,6 @@ namespace Quantum
                 playerStates.Add(playerState);
                 f.Events.OnPlayerJoined(player);
             }
-            
-            //TODO: Create player entity
-            // Direct reference to runtime config on debug on scene
-            // var data = f.RuntimeConfig.DefaultPlayerAvatar;
-            // var entityPrototypeAsset = f.FindAsset(data);
-            // var playerEntity = f.Create(entityPrototypeAsset);
-            // f.Add(playerEntity, new PlayerLink { PlayerRef = player });
-            // AssignToTeam(f, playerEntity, player);
         }
         
         public void OnPlayerTeamUpdated(Frame f, PlayerRef playerRef, Team team)
@@ -54,20 +46,6 @@ namespace Quantum
                     break;
                 }
             }
-        }
-
-
-        private void AssignToTeam(Frame frame, EntityRef playerEntity, PlayerRef player)
-        {
-            frame.Add(playerEntity, new PlayerState()
-            {
-                Player = player,
-                Team = frame.PlayerConnectedCount % 2 == 0 ? Team.Left : Team.Right,
-                SpawnPosition = new FPVector2(frame.PlayerConnectedCount % 2 == 0 ? -2 : 2, 0)
-            });
-
-            var transform = frame.Unsafe.GetPointer<Transform2D>(playerEntity);
-            transform -> Position = frame.Get<PlayerState>(playerEntity).SpawnPosition;
         }
 
         public void OnPlayerDisconnected(Frame f, PlayerRef player)

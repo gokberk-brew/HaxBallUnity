@@ -1,8 +1,8 @@
-singleton component ScoreState {
+singleton component GameState {
   Int32 ScoreLeft;
   Int32 ScoreRight;
   Int32 ScoreLimit;
-  Boolean GameEnded;
+  Boolean IsGameActive;
   Team WinningTeam;
   
   // Respawn control

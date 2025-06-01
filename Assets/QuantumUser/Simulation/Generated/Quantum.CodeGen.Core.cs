@@ -691,6 +691,48 @@ namespace Quantum {
     }
   }
   [StructLayout(LayoutKind.Explicit)]
+  public unsafe partial struct GameState : Quantum.IComponentSingleton {
+    public const Int32 SIZE = 28;
+    public const Int32 ALIGNMENT = 4;
+    [FieldOffset(8)]
+    public Int32 ScoreLeft;
+    [FieldOffset(16)]
+    public Int32 ScoreRight;
+    [FieldOffset(12)]
+    public Int32 ScoreLimit;
+    [FieldOffset(20)]
+    public QBoolean IsGameActive;
+    [FieldOffset(0)]
+    public Team WinningTeam;
+    [FieldOffset(24)]
+    public QBoolean IsGoalPending;
+    [FieldOffset(4)]
+    public Int32 RespawnCountdown;
+    public override Int32 GetHashCode() {
+      unchecked { 
+        var hash = 6701;
+        hash = hash * 31 + ScoreLeft.GetHashCode();
+        hash = hash * 31 + ScoreRight.GetHashCode();
+        hash = hash * 31 + ScoreLimit.GetHashCode();
+        hash = hash * 31 + IsGameActive.GetHashCode();
+        hash = hash * 31 + (Byte)WinningTeam;
+        hash = hash * 31 + IsGoalPending.GetHashCode();
+        hash = hash * 31 + RespawnCountdown.GetHashCode();
+        return hash;
+      }
+    }
+    public static void Serialize(void* ptr, FrameSerializer serializer) {
+        var p = (GameState*)ptr;
+        serializer.Stream.Serialize((Byte*)&p->WinningTeam);
+        serializer.Stream.Serialize(&p->RespawnCountdown);
+        serializer.Stream.Serialize(&p->ScoreLeft);
+        serializer.Stream.Serialize(&p->ScoreLimit);
+        serializer.Stream.Serialize(&p->ScoreRight);
+        QBoolean.Serialize(&p->IsGameActive, serializer);
+        QBoolean.Serialize(&p->IsGoalPending, serializer);
+    }
+  }
+  [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct GoalPostTag : Quantum.IComponent {
     public const Int32 SIZE = 4;
     public const Int32 ALIGNMENT = 1;
@@ -819,55 +861,17 @@ namespace Quantum {
         var p = (PuckTag*)ptr;
     }
   }
-  [StructLayout(LayoutKind.Explicit)]
-  public unsafe partial struct ScoreState : Quantum.IComponentSingleton {
-    public const Int32 SIZE = 28;
-    public const Int32 ALIGNMENT = 4;
-    [FieldOffset(8)]
-    public Int32 ScoreLeft;
-    [FieldOffset(16)]
-    public Int32 ScoreRight;
-    [FieldOffset(12)]
-    public Int32 ScoreLimit;
-    [FieldOffset(20)]
-    public QBoolean GameEnded;
-    [FieldOffset(0)]
-    public Team WinningTeam;
-    [FieldOffset(24)]
-    public QBoolean IsGoalPending;
-    [FieldOffset(4)]
-    public Int32 RespawnCountdown;
-    public override Int32 GetHashCode() {
-      unchecked { 
-        var hash = 14081;
-        hash = hash * 31 + ScoreLeft.GetHashCode();
-        hash = hash * 31 + ScoreRight.GetHashCode();
-        hash = hash * 31 + ScoreLimit.GetHashCode();
-        hash = hash * 31 + GameEnded.GetHashCode();
-        hash = hash * 31 + (Byte)WinningTeam;
-        hash = hash * 31 + IsGoalPending.GetHashCode();
-        hash = hash * 31 + RespawnCountdown.GetHashCode();
-        return hash;
-      }
-    }
-    public static void Serialize(void* ptr, FrameSerializer serializer) {
-        var p = (ScoreState*)ptr;
-        serializer.Stream.Serialize((Byte*)&p->WinningTeam);
-        serializer.Stream.Serialize(&p->RespawnCountdown);
-        serializer.Stream.Serialize(&p->ScoreLeft);
-        serializer.Stream.Serialize(&p->ScoreLimit);
-        serializer.Stream.Serialize(&p->ScoreRight);
-        QBoolean.Serialize(&p->GameEnded, serializer);
-        QBoolean.Serialize(&p->IsGoalPending, serializer);
-    }
-  }
   public unsafe partial interface ISignalOnPlayerTeamUpdated : ISignal {
     void OnPlayerTeamUpdated(Frame f, PlayerRef playerRef, Team team);
+  }
+  public unsafe partial interface ISignalOnGameStarted : ISignal {
+    void OnGameStarted(Frame f);
   }
   public static unsafe partial class Constants {
   }
   public unsafe partial class Frame {
     private ISignalOnPlayerTeamUpdated[] _ISignalOnPlayerTeamUpdatedSystems;
+    private ISignalOnGameStarted[] _ISignalOnGameStartedSystems;
     partial void AllocGen() {
       _globals = (_globals_*)Context.Allocator.AllocAndClear(sizeof(_globals_));
     }
@@ -880,12 +884,15 @@ namespace Quantum {
     partial void InitGen() {
       Initialize(this, this.SimulationConfig.Entities, 256);
       _ISignalOnPlayerTeamUpdatedSystems = BuildSignalsArray<ISignalOnPlayerTeamUpdated>();
+      _ISignalOnGameStartedSystems = BuildSignalsArray<ISignalOnGameStarted>();
       _ComponentSignalsOnAdded = new ComponentReactiveCallbackInvoker[ComponentTypeId.Type.Length];
       _ComponentSignalsOnRemoved = new ComponentReactiveCallbackInvoker[ComponentTypeId.Type.Length];
       BuildSignalsArrayOnComponentAdded<CharacterController2D>();
       BuildSignalsArrayOnComponentRemoved<CharacterController2D>();
       BuildSignalsArrayOnComponentAdded<CharacterController3D>();
       BuildSignalsArrayOnComponentRemoved<CharacterController3D>();
+      BuildSignalsArrayOnComponentAdded<Quantum.GameState>();
+      BuildSignalsArrayOnComponentRemoved<Quantum.GameState>();
       BuildSignalsArrayOnComponentAdded<Quantum.GoalPostTag>();
       BuildSignalsArrayOnComponentRemoved<Quantum.GoalPostTag>();
       BuildSignalsArrayOnComponentAdded<MapEntityLink>();
@@ -924,8 +931,6 @@ namespace Quantum {
       BuildSignalsArrayOnComponentRemoved<Quantum.PlayerTag>();
       BuildSignalsArrayOnComponentAdded<Quantum.PuckTag>();
       BuildSignalsArrayOnComponentRemoved<Quantum.PuckTag>();
-      BuildSignalsArrayOnComponentAdded<Quantum.ScoreState>();
-      BuildSignalsArrayOnComponentRemoved<Quantum.ScoreState>();
       BuildSignalsArrayOnComponentAdded<Transform2D>();
       BuildSignalsArrayOnComponentRemoved<Transform2D>();
       BuildSignalsArrayOnComponentAdded<Transform2DVertical>();
@@ -959,6 +964,15 @@ namespace Quantum {
           var s = array[i];
           if (_f.SystemIsEnabledInHierarchy((SystemBase)s)) {
             s.OnPlayerTeamUpdated(_f, playerRef, team);
+          }
+        }
+      }
+      public void OnGameStarted() {
+        var array = _f._ISignalOnGameStartedSystems;
+        for (Int32 i = 0; i < array.Length; ++i) {
+          var s = array[i];
+          if (_f.SystemIsEnabledInHierarchy((SystemBase)s)) {
+            s.OnGameStarted(_f);
           }
         }
       }
@@ -1003,6 +1017,7 @@ namespace Quantum {
       typeRegistry.Register(typeof(FPVector3), FPVector3.SIZE);
       typeRegistry.Register(typeof(FrameMetaData), FrameMetaData.SIZE);
       typeRegistry.Register(typeof(FrameTimer), FrameTimer.SIZE);
+      typeRegistry.Register(typeof(Quantum.GameState), Quantum.GameState.SIZE);
       typeRegistry.Register(typeof(Quantum.GoalPostSide), 1);
       typeRegistry.Register(typeof(Quantum.GoalPostTag), Quantum.GoalPostTag.SIZE);
       typeRegistry.Register(typeof(HingeJoint), HingeJoint.SIZE);
@@ -1053,7 +1068,6 @@ namespace Quantum {
       typeRegistry.Register(typeof(Quantum.Ptr), Quantum.Ptr.SIZE);
       typeRegistry.Register(typeof(QueryOptions), 2);
       typeRegistry.Register(typeof(RNGSession), RNGSession.SIZE);
-      typeRegistry.Register(typeof(Quantum.ScoreState), Quantum.ScoreState.SIZE);
       typeRegistry.Register(typeof(Shape2D), Shape2D.SIZE);
       typeRegistry.Register(typeof(Shape3D), Shape3D.SIZE);
       typeRegistry.Register(typeof(SpringJoint), SpringJoint.SIZE);
@@ -1068,13 +1082,13 @@ namespace Quantum {
     static partial void InitComponentTypeIdGen() {
       ComponentTypeId.Reset(ComponentTypeId.BuiltInComponentCount + 7)
         .AddBuiltInComponents()
+        .Add<Quantum.GameState>(Quantum.GameState.Serialize, null, null, ComponentFlags.Singleton)
         .Add<Quantum.GoalPostTag>(Quantum.GoalPostTag.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.PlayerLink>(Quantum.PlayerLink.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.PlayerState>(Quantum.PlayerState.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.PlayerStateSingleton>(Quantum.PlayerStateSingleton.Serialize, null, Quantum.PlayerStateSingleton.OnRemoved, ComponentFlags.Singleton)
         .Add<Quantum.PlayerTag>(Quantum.PlayerTag.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.PuckTag>(Quantum.PuckTag.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.ScoreState>(Quantum.ScoreState.Serialize, null, null, ComponentFlags.Singleton)
         .Finish();
     }
     [Preserve()]

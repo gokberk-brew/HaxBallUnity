@@ -17,6 +17,7 @@ public class LobbyUIHandler : MonoBehaviour
     [SerializeField] private Button RedButton;
     [SerializeField] private Button SpecButton;
     [SerializeField] private Button BlueButton;
+    [SerializeField] private Button StartButton;
     
     private void Start()
     {
@@ -26,6 +27,13 @@ public class LobbyUIHandler : MonoBehaviour
         RedButton.onClick.AddListener(() => PlayerTeamUpdateRequest(Team.Left));
         SpecButton.onClick.AddListener(() => PlayerTeamUpdateRequest(Team.Spec));
         BlueButton.onClick.AddListener(() => PlayerTeamUpdateRequest(Team.Right));
+        StartButton.onClick.AddListener(StartGame);
+    }
+
+    private void StartGame()
+    {
+        QuantumRunner.Default.Game.SendCommand(new StartCommand());
+        gameObject.SetActive(false);
     }
 
     private void OnPlayerChangeTeam(EventOnPlayerChangeTeam callback)
@@ -74,7 +82,7 @@ public class LobbyUIHandler : MonoBehaviour
     {
         var localPlayer = QuantumRunner.Default.Game.GetLocalPlayers()[0];
 
-        QuantumRunner.Default.Game.SendCommand(new CommandChangeTeam {
+        QuantumRunner.Default.Game.SendCommand(new ChangeTeamCommand {
             Player = localPlayer,
             Team = newTeam
         });

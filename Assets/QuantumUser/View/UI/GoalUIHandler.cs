@@ -27,16 +27,15 @@ public class GoalUIHandler : MonoBehaviour
     {
         var teamText = callback.ScoredTeam == Team.Left ? "Red" : "Blue";
 
-        _leftText.text = callback.ScoreSate.ScoreLeft.ToString();
-        _rightText.text = callback.ScoreSate.ScoreRight.ToString();
+        _leftText.text = callback.GameState.ScoreLeft.ToString();
+        _rightText.text = callback.GameState.ScoreRight.ToString();
         
         _goalText.gameObject.SetActive(true);
 
-        if (callback.ScoreSate.GameEnded)
+        if (!callback.GameState.IsGameActive)
         {
-            var winningText = callback.ScoreSate.WinningTeam == Team.Left ? "Red" : "Blue";
+            var winningText = callback.GameState.WinningTeam == Team.Left ? "Red" : "Blue";
             _goalText.text = winningText + " wins!";
-            // StartCoroutine(DisconnectAllAfterDelay(3f)); // Optional delay
         }
         else
         {
@@ -45,16 +44,5 @@ public class GoalUIHandler : MonoBehaviour
         
         yield return new WaitForSeconds(2);
         _goalText.gameObject.SetActive(false);
-    }
-    
-    private IEnumerator DisconnectAllAfterDelay(float seconds)
-    {
-        yield return new WaitForSeconds(seconds);
-
-        // If called from inside a Quantum callback, use this:
-        QuantumRunner.ShutdownAll();
-
-        // If called from outside (e.g. UI), you can use:
-        // await QuantumRunner.ShutdownAllAsync();
     }
 }

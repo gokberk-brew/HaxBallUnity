@@ -5352,6 +5352,7 @@ MonoBehaviour:
   RedButton: {fileID: 182332176}
   SpecButton: {fileID: 1804825432}
   BlueButton: {fileID: 1032255299}
+  StartButton: {fileID: 292520057}
 --- !u!1 &1266075545
 GameObject:
   m_ObjectHideFlags: 0

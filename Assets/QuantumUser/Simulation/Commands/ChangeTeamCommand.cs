@@ -1,7 +1,7 @@
 using Photon.Deterministic;
 
 namespace Quantum {
-    public class CommandChangeTeam : DeterministicCommand {
+    public class ChangeTeamCommand : DeterministicCommand {
         public PlayerRef Player;
         public Team Team;
 

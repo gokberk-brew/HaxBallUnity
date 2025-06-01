@@ -52,7 +52,7 @@ MonoBehaviour:
     StartDisabled: 0
     Children: []
   - SystemType:
-      AssemblyQualifiedName: Quantum.PlayerSpawnSystem, Quantum.Simulation
+      AssemblyQualifiedName: Quantum.PlayerStateSystem, Quantum.Simulation
     SystemName: 
     StartDisabled: 0
     Children: []

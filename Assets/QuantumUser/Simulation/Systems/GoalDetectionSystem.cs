@@ -23,14 +23,14 @@ namespace Quantum
         
         private void ScoreGoal(Frame f, Team scoringTeam)
         {
-            var scoreState = f.Unsafe.GetPointerSingleton<ScoreState>();
+            var scoreState = f.Unsafe.GetPointerSingleton<GameState>();
 
             if (scoringTeam == Team.Left)
             {
                 scoreState->ScoreLeft++;
                 if (scoreState->ScoreLeft == scoreState->ScoreLimit)
                 {
-                    scoreState->GameEnded = true;
+                    scoreState->IsGameActive = false;
                     scoreState->WinningTeam = Team.Left;
                 }
             }
@@ -39,17 +39,17 @@ namespace Quantum
                 scoreState->ScoreRight++;
                 if (scoreState->ScoreRight == scoreState->ScoreLimit)
                 {
-                    scoreState->GameEnded = true;
+                    scoreState->IsGameActive = false;
                     scoreState->WinningTeam = Team.Right;
                 }
             }
             scoreState ->IsGoalPending = true;
             
-            f.Events.OnGoalScored(scoringTeam, new ScoreState()
+            f.Events.OnGoalScored(scoringTeam, new GameState
             {
                 ScoreLeft = scoreState->ScoreLeft,
                 ScoreRight = scoreState->ScoreRight,
-                GameEnded = scoreState->GameEnded
+                IsGameActive = scoreState->IsGameActive
             });
         } }
 }

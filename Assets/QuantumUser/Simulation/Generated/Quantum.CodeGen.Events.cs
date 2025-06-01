@@ -68,11 +68,11 @@ namespace Quantum {
           default: break;
         }
       }
-      public EventOnGoalScored OnGoalScored(Team ScoredTeam, ScoreState ScoreSate) {
+      public EventOnGoalScored OnGoalScored(Team ScoredTeam, GameState GameState) {
         if (_f.IsPredicted) return null;
         var ev = _f.Context.AcquireEvent<EventOnGoalScored>(EventOnGoalScored.ID);
         ev.ScoredTeam = ScoredTeam;
-        ev.ScoreSate = ScoreSate;
+        ev.GameState = GameState;
         _f.AddEvent(ev);
         return ev;
       }
@@ -102,7 +102,7 @@ namespace Quantum {
   public unsafe partial class EventOnGoalScored : EventBase {
     public new const Int32 ID = 1;
     public Team ScoredTeam;
-    public ScoreState ScoreSate;
+    public GameState GameState;
     protected EventOnGoalScored(Int32 id, EventFlags flags) : 
         base(id, flags) {
     }
@@ -121,7 +121,7 @@ namespace Quantum {
       unchecked {
         var hash = 41;
         hash = hash * 31 + ScoredTeam.GetHashCode();
-        hash = hash * 31 + ScoreSate.GetHashCode();
+        hash = hash * 31 + GameState.GetHashCode();
         return hash;
       }
     }

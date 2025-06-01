@@ -1,6 +1,6 @@
 synced event OnGoalScored{
     Team ScoredTeam;
-    ScoreState ScoreSate;
+    GameState GameState;
 }
 
 synced event OnPlayerJoined{

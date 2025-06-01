@@ -4,15 +4,25 @@ namespace Quantum
     using UnityEngine.Scripting;
 
     [Preserve]
-    public unsafe class CommandExecutionSystem : SystemMainThread
+    public class CommandExecutionSystem : SystemMainThread
     {
         public override void Update(Frame frame)
         {
             for (int i = 0; i < frame.PlayerConnectedCount; i++)
             {
-                var command = frame.GetPlayerCommand(i) as CommandChangeTeam;
-                command?.Execute(frame);
+                var command = frame.GetPlayerCommand(i);
+
+                switch (command)
+                {
+                    case ChangeTeamCommand changeTeam:
+                        changeTeam.Execute(frame);
+                        break;
+                    case StartCommand start:
+                        start.Execute(frame);
+                        break;
+                }
             }
         }
+
     }
 }

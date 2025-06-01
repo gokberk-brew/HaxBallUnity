@@ -50,6 +50,33 @@ namespace Quantum.Prototypes {
   #endif //;
   
   [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.GameState))]
+  public unsafe partial class GameStatePrototype : ComponentPrototype<Quantum.GameState> {
+    public Int32 ScoreLeft;
+    public Int32 ScoreRight;
+    public Int32 ScoreLimit;
+    public QBoolean IsGameActive;
+    public Quantum.QEnum8<Team> WinningTeam;
+    public QBoolean IsGoalPending;
+    public Int32 RespawnCountdown;
+    partial void MaterializeUser(Frame frame, ref Quantum.GameState result, in PrototypeMaterializationContext context);
+    public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
+        Quantum.GameState component = default;
+        Materialize((Frame)f, ref component, in context);
+        return f.Set(entity, component) == SetResult.ComponentAdded;
+    }
+    public void Materialize(Frame frame, ref Quantum.GameState result, in PrototypeMaterializationContext context = default) {
+        result.ScoreLeft = this.ScoreLeft;
+        result.ScoreRight = this.ScoreRight;
+        result.ScoreLimit = this.ScoreLimit;
+        result.IsGameActive = this.IsGameActive;
+        result.WinningTeam = this.WinningTeam;
+        result.IsGoalPending = this.IsGoalPending;
+        result.RespawnCountdown = this.RespawnCountdown;
+        MaterializeUser(frame, ref result, in context);
+    }
+  }
+  [System.SerializableAttribute()]
   [Quantum.Prototypes.Prototype(typeof(Quantum.GoalPostTag))]
   public unsafe partial class GoalPostTagPrototype : ComponentPrototype<Quantum.GoalPostTag> {
     public Quantum.QEnum8<GoalPostSide> Side;
@@ -167,33 +194,6 @@ namespace Quantum.Prototypes {
         return f.Set(entity, component) == SetResult.ComponentAdded;
     }
     public void Materialize(Frame frame, ref Quantum.PuckTag result, in PrototypeMaterializationContext context = default) {
-        MaterializeUser(frame, ref result, in context);
-    }
-  }
-  [System.SerializableAttribute()]
-  [Quantum.Prototypes.Prototype(typeof(Quantum.ScoreState))]
-  public unsafe partial class ScoreStatePrototype : ComponentPrototype<Quantum.ScoreState> {
-    public Int32 ScoreLeft;
-    public Int32 ScoreRight;
-    public Int32 ScoreLimit;
-    public QBoolean GameEnded;
-    public Quantum.QEnum8<Team> WinningTeam;
-    public QBoolean IsGoalPending;
-    public Int32 RespawnCountdown;
-    partial void MaterializeUser(Frame frame, ref Quantum.ScoreState result, in PrototypeMaterializationContext context);
-    public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
-        Quantum.ScoreState component = default;
-        Materialize((Frame)f, ref component, in context);
-        return f.Set(entity, component) == SetResult.ComponentAdded;
-    }
-    public void Materialize(Frame frame, ref Quantum.ScoreState result, in PrototypeMaterializationContext context = default) {
-        result.ScoreLeft = this.ScoreLeft;
-        result.ScoreRight = this.ScoreRight;
-        result.ScoreLimit = this.ScoreLimit;
-        result.GameEnded = this.GameEnded;
-        result.WinningTeam = this.WinningTeam;
-        result.IsGoalPending = this.IsGoalPending;
-        result.RespawnCountdown = this.RespawnCountdown;
         MaterializeUser(frame, ref result, in context);
     }
   }
