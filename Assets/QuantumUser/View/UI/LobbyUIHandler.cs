@@ -36,6 +36,11 @@ public class LobbyUIHandler : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    public void OnExitButtonClicked()
+    {
+        gameObject.SetActive(false);
+    }
+
     private void OnStartGameButtonClicked()
     {
         QuantumRunner.Default.Game.SendCommand(new StartGameCommand());

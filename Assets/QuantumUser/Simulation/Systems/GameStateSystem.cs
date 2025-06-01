@@ -34,6 +34,7 @@ namespace Quantum
                 SpawnPlayers(f);
                 gameState->IsGameActive = true;
                 f.Events.OnGameStarted();
+                
             }
         }
 
