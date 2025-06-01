@@ -2,8 +2,10 @@ singleton component GameState {
   Int32 ScoreLeft;
   Int32 ScoreRight;
   Int32 ScoreLimit;
+  Int32 TimeLimit;
   Boolean IsGameActive;
   Team WinningTeam;
+  Boolean IsSystemInitialized;
   
   // Respawn control
   Boolean IsGoalPending;

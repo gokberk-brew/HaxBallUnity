@@ -5891,6 +5891,8 @@ MonoBehaviour:
   SpecButton: {fileID: 1804825432}
   BlueButton: {fileID: 1032255299}
   StartButton: {fileID: 292520057}
+  TimeDropdown: {fileID: 423103726}
+  ScoreDropdown: {fileID: 125627833}
 --- !u!1 &1266075545
 GameObject:
   m_ObjectHideFlags: 0

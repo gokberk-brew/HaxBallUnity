@@ -16,9 +16,11 @@ namespace Quantum
                 ScoreLeft = 0,
                 ScoreRight = 0,
                 ScoreLimit = 3,
+                TimeLimit = 0,
                 IsGoalPending = false,
                 RespawnCountdown = 120,
-                IsGameActive = false
+                IsGameActive = false,
+                IsSystemInitialized = true
             });
 
             var playerStateList = f.AllocateList<PlayerState>();

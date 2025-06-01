@@ -19,3 +19,11 @@ event OnPlayerChangeTeam{
     player_ref PlayerRef;
     Team Team;
 }
+
+synced event OnTimeDropdownChanged{
+   byte TimeLimit;
+}
+
+synced event OnScoreDropdownChanged{
+    byte ScoreLimit;
+}

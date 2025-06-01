@@ -55,8 +55,10 @@ namespace Quantum.Prototypes {
     public Int32 ScoreLeft;
     public Int32 ScoreRight;
     public Int32 ScoreLimit;
+    public Int32 TimeLimit;
     public QBoolean IsGameActive;
     public Quantum.QEnum8<Team> WinningTeam;
+    public QBoolean IsSystemInitialized;
     public QBoolean IsGoalPending;
     public Int32 RespawnCountdown;
     partial void MaterializeUser(Frame frame, ref Quantum.GameState result, in PrototypeMaterializationContext context);
@@ -69,8 +71,10 @@ namespace Quantum.Prototypes {
         result.ScoreLeft = this.ScoreLeft;
         result.ScoreRight = this.ScoreRight;
         result.ScoreLimit = this.ScoreLimit;
+        result.TimeLimit = this.TimeLimit;
         result.IsGameActive = this.IsGameActive;
         result.WinningTeam = this.WinningTeam;
+        result.IsSystemInitialized = this.IsSystemInitialized;
         result.IsGoalPending = this.IsGoalPending;
         result.RespawnCountdown = this.RespawnCountdown;
         MaterializeUser(frame, ref result, in context);

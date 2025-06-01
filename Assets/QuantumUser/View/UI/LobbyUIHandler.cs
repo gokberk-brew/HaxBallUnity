@@ -1,10 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using JetBrains.Annotations;
 using Quantum;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 using Button = UnityEngine.UI.Button;
 
 public class LobbyUIHandler : MonoBehaviour
@@ -18,6 +23,11 @@ public class LobbyUIHandler : MonoBehaviour
     [SerializeField] private Button SpecButton;
     [SerializeField] private Button BlueButton;
     [SerializeField] private Button StartButton;
+    [SerializeField] private TMP_Dropdown TimeDropdown;
+    [SerializeField] private TMP_Dropdown ScoreDropdown;
+    
+    private bool _isServerUIUpdate;
+    private bool _uiReady;
     
     private void Start()
     {
@@ -25,10 +35,82 @@ public class LobbyUIHandler : MonoBehaviour
         QuantumEvent.Subscribe<EventOnPlayerLeft>(this, OnPlayerLeft);
         QuantumEvent.Subscribe<EventOnPlayerChangeTeam>(this, OnPlayerChangeTeam);
         QuantumEvent.Subscribe<EventOnGameStarted>(this, OnGameStarted);
+        QuantumEvent.Subscribe<EventOnScoreDropdownChanged>(this, UpdateScoreDropdown);
+        QuantumEvent.Subscribe<EventOnTimeDropdownChanged>(this, UpdateTimeDropdown);
+        QuantumEvent.Subscribe<EventOnSystemInitialized>(this, InitUI);
+        
         RedButton.onClick.AddListener(() => PlayerTeamUpdateRequest(Team.Left));
         SpecButton.onClick.AddListener(() => PlayerTeamUpdateRequest(Team.Spec));
         BlueButton.onClick.AddListener(() => PlayerTeamUpdateRequest(Team.Right));
         StartButton.onClick.AddListener(OnStartGameButtonClicked);
+        TimeDropdown.onValueChanged.AddListener( HandleTimeDropdownValueChange);
+        ScoreDropdown.onValueChanged.AddListener(HandleScoreDropdownValueChange);
+        IsQuantumInitialized();
+    }
+
+    private void IsQuantumInitialized()
+    {
+        // ✅ Try to access the GameState now in case system already initialized
+        var game = QuantumRunner.DefaultGame;
+        if (game?.Frames?.Verified != null &&
+            game.Frames.Verified.TryGetSingleton<GameState>(out var gameState))
+        {
+            if(gameState.IsSystemInitialized)
+                InitUI(null);
+        }
+    }
+
+    private void InitUI([CanBeNull] EventOnSystemInitialized callback)
+    {
+        if(_uiReady)
+            return;
+        
+        var game = QuantumRunner.DefaultGame;
+        var frame = game.Frames.Verified;
+
+        if (frame.TryGetSingleton<GameState>(out var gameState))
+        {
+            _isServerUIUpdate = true;
+            ScoreDropdown.value = gameState.ScoreLimit;
+            TimeDropdown.value = gameState.TimeLimit;
+            _isServerUIUpdate = false;
+        }
+
+        _uiReady = true;
+    }
+
+    private void UpdateTimeDropdown(EventOnTimeDropdownChanged callback)
+    {
+        _isServerUIUpdate = true;
+        TimeDropdown.value = callback.TimeLimit;
+        _isServerUIUpdate = false;
+    }
+
+    private void UpdateScoreDropdown(EventOnScoreDropdownChanged callback)
+    {
+        _isServerUIUpdate = true;
+        ScoreDropdown.value = callback.ScoreLimit;
+        _isServerUIUpdate = false;
+    }
+
+    private void HandleScoreDropdownValueChange(int score)
+    {
+        if(_isServerUIUpdate) return;
+        
+        QuantumRunner.DefaultGame.SendCommand(new ScoreDropdownCommand()
+        {
+            ScoreLimit = (byte)score
+        });
+    }
+
+    private void HandleTimeDropdownValueChange(int time)
+    {
+        if(_isServerUIUpdate) return;
+        
+        QuantumRunner.DefaultGame.SendCommand(new TimeDropdownCommand()
+        {
+            TimeLimit = (byte)time
+        });
     }
 
     private void OnGameStarted(EventOnGameStarted callback)

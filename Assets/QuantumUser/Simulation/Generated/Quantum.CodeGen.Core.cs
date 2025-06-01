@@ -692,7 +692,7 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct GameState : Quantum.IComponentSingleton {
-    public const Int32 SIZE = 28;
+    public const Int32 SIZE = 36;
     public const Int32 ALIGNMENT = 4;
     [FieldOffset(8)]
     public Int32 ScoreLeft;
@@ -701,10 +701,14 @@ namespace Quantum {
     [FieldOffset(12)]
     public Int32 ScoreLimit;
     [FieldOffset(20)]
+    public Int32 TimeLimit;
+    [FieldOffset(24)]
     public QBoolean IsGameActive;
     [FieldOffset(0)]
     public Team WinningTeam;
-    [FieldOffset(24)]
+    [FieldOffset(32)]
+    public QBoolean IsSystemInitialized;
+    [FieldOffset(28)]
     public QBoolean IsGoalPending;
     [FieldOffset(4)]
     public Int32 RespawnCountdown;
@@ -714,8 +718,10 @@ namespace Quantum {
         hash = hash * 31 + ScoreLeft.GetHashCode();
         hash = hash * 31 + ScoreRight.GetHashCode();
         hash = hash * 31 + ScoreLimit.GetHashCode();
+        hash = hash * 31 + TimeLimit.GetHashCode();
         hash = hash * 31 + IsGameActive.GetHashCode();
         hash = hash * 31 + (Byte)WinningTeam;
+        hash = hash * 31 + IsSystemInitialized.GetHashCode();
         hash = hash * 31 + IsGoalPending.GetHashCode();
         hash = hash * 31 + RespawnCountdown.GetHashCode();
         return hash;
@@ -728,8 +734,10 @@ namespace Quantum {
         serializer.Stream.Serialize(&p->ScoreLeft);
         serializer.Stream.Serialize(&p->ScoreLimit);
         serializer.Stream.Serialize(&p->ScoreRight);
+        serializer.Stream.Serialize(&p->TimeLimit);
         QBoolean.Serialize(&p->IsGameActive, serializer);
         QBoolean.Serialize(&p->IsGoalPending, serializer);
+        QBoolean.Serialize(&p->IsSystemInitialized, serializer);
     }
   }
   [StructLayout(LayoutKind.Explicit)]

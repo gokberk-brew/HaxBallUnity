@@ -52,7 +52,7 @@ namespace Quantum {
   public unsafe partial class Frame {
     public unsafe partial struct FrameEvents {
       static partial void GetEventTypeCountCodeGen(ref Int32 eventCount) {
-        eventCount = 7;
+        eventCount = 9;
       }
       static partial void GetParentEventIDCodeGen(Int32 eventID, ref Int32 parentEventID) {
         switch (eventID) {
@@ -67,6 +67,8 @@ namespace Quantum {
           case EventOnPlayerJoined.ID: result = typeof(EventOnPlayerJoined); return;
           case EventOnPlayerLeft.ID: result = typeof(EventOnPlayerLeft); return;
           case EventOnPlayerChangeTeam.ID: result = typeof(EventOnPlayerChangeTeam); return;
+          case EventOnTimeDropdownChanged.ID: result = typeof(EventOnTimeDropdownChanged); return;
+          case EventOnScoreDropdownChanged.ID: result = typeof(EventOnScoreDropdownChanged); return;
           default: break;
         }
       }
@@ -108,6 +110,20 @@ namespace Quantum {
         var ev = _f.Context.AcquireEvent<EventOnPlayerChangeTeam>(EventOnPlayerChangeTeam.ID);
         ev.PlayerRef = PlayerRef;
         ev.Team = Team;
+        _f.AddEvent(ev);
+        return ev;
+      }
+      public EventOnTimeDropdownChanged OnTimeDropdownChanged(Byte TimeLimit) {
+        if (_f.IsPredicted) return null;
+        var ev = _f.Context.AcquireEvent<EventOnTimeDropdownChanged>(EventOnTimeDropdownChanged.ID);
+        ev.TimeLimit = TimeLimit;
+        _f.AddEvent(ev);
+        return ev;
+      }
+      public EventOnScoreDropdownChanged OnScoreDropdownChanged(Byte ScoreLimit) {
+        if (_f.IsPredicted) return null;
+        var ev = _f.Context.AcquireEvent<EventOnScoreDropdownChanged>(EventOnScoreDropdownChanged.ID);
+        ev.ScoreLimit = ScoreLimit;
         _f.AddEvent(ev);
         return ev;
       }
@@ -259,6 +275,56 @@ namespace Quantum {
         var hash = 61;
         hash = hash * 31 + PlayerRef.GetHashCode();
         hash = hash * 31 + Team.GetHashCode();
+        return hash;
+      }
+    }
+  }
+  public unsafe partial class EventOnTimeDropdownChanged : EventBase {
+    public new const Int32 ID = 7;
+    public Byte TimeLimit;
+    protected EventOnTimeDropdownChanged(Int32 id, EventFlags flags) : 
+        base(id, flags) {
+    }
+    public EventOnTimeDropdownChanged() : 
+        base(7, EventFlags.Server|EventFlags.Client|EventFlags.Synced) {
+    }
+    public new QuantumGame Game {
+      get {
+        return (QuantumGame)base.Game;
+      }
+      set {
+        base.Game = value;
+      }
+    }
+    public override Int32 GetHashCode() {
+      unchecked {
+        var hash = 67;
+        hash = hash * 31 + TimeLimit.GetHashCode();
+        return hash;
+      }
+    }
+  }
+  public unsafe partial class EventOnScoreDropdownChanged : EventBase {
+    public new const Int32 ID = 8;
+    public Byte ScoreLimit;
+    protected EventOnScoreDropdownChanged(Int32 id, EventFlags flags) : 
+        base(id, flags) {
+    }
+    public EventOnScoreDropdownChanged() : 
+        base(8, EventFlags.Server|EventFlags.Client|EventFlags.Synced) {
+    }
+    public new QuantumGame Game {
+      get {
+        return (QuantumGame)base.Game;
+      }
+      set {
+        base.Game = value;
+      }
+    }
+    public override Int32 GetHashCode() {
+      unchecked {
+        var hash = 71;
+        hash = hash * 31 + ScoreLimit.GetHashCode();
         return hash;
       }
     }

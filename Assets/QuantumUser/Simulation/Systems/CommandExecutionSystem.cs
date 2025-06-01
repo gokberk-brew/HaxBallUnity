@@ -14,6 +14,12 @@ namespace Quantum
 
                 switch (command)
                 {
+                    case ScoreDropdownCommand scoreDropdownCommand:
+                        scoreDropdownCommand.Execute(frame);
+                        break;
+                    case TimeDropdownCommand timeDropdownCommand:
+                        timeDropdownCommand.Execute(frame);
+                        break;
                     case ChangeTeamCommand changeTeam:
                         changeTeam.Execute(frame);
                         break;
