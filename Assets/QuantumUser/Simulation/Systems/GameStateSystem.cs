@@ -96,6 +96,10 @@ namespace Quantum
                         return;
                     }
                 }
+                else
+                {
+                    gameState->RemainingTimeTicks++;
+                }
                 
                 if (gameState->IsGoalPending)
                 {
