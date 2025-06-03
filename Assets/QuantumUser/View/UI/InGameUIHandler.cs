@@ -5,11 +5,12 @@ using Quantum;
 using TMPro;
 using UnityEngine;
 
-public class GoalUIHandler : MonoBehaviour
+public class InGameUIHandler : MonoBehaviour
 {
     [SerializeField] private TMP_Text _goalText;
     [SerializeField] private TMP_Text _leftText;
     [SerializeField] private TMP_Text _rightText;
+    [SerializeField] private TMP_Text _timerText;
     
     private void OnEnable()
     {
@@ -17,7 +18,27 @@ public class GoalUIHandler : MonoBehaviour
         _rightText.text = 0.ToString();
         QuantumEvent.Subscribe<EventOnGoalScored>(this, OnGoalScored);
     }
+    
+    private void Update()
+    {
+        var game = QuantumRunner.DefaultGame;
+        if (game?.Frames?.Verified == null)
+            return;
 
+        var frame = game.Frames.Verified;
+        if (!frame.TryGetSingleton<GameState>(out var state))
+            return;
+        
+        if(!state.IsGameActive)
+            return;
+
+        int totalSeconds = state.RemainingTimeTicks / 60;
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+
+        _timerText.text = $"{minutes:D2}:{seconds:D2}";
+    }
+    
     private void OnGoalScored(EventOnGoalScored callback)
     {
         StartCoroutine(ShowGoalText(callback));

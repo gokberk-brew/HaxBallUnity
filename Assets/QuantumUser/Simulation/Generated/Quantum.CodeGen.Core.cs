@@ -49,6 +49,10 @@ namespace Quantum {
   using RuntimeInitializeOnLoadMethodAttribute = UnityEngine.RuntimeInitializeOnLoadMethodAttribute;
   #endif //;
   
+  public enum GameEndReason : int {
+    Timeout,
+    Score,
+  }
   public enum GoalPostSide : byte {
     Left,
     Right,
@@ -692,25 +696,27 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct GameState : Quantum.IComponentSingleton {
-    public const Int32 SIZE = 36;
+    public const Int32 SIZE = 40;
     public const Int32 ALIGNMENT = 4;
-    [FieldOffset(8)]
-    public Int32 ScoreLeft;
-    [FieldOffset(16)]
-    public Int32 ScoreRight;
     [FieldOffset(12)]
-    public Int32 ScoreLimit;
+    public Int32 ScoreLeft;
     [FieldOffset(20)]
-    public Int32 TimeLimit;
+    public Int32 ScoreRight;
+    [FieldOffset(16)]
+    public Int32 ScoreLimit;
     [FieldOffset(24)]
+    public Int32 TimeLimit;
+    [FieldOffset(28)]
     public QBoolean IsGameActive;
     [FieldOffset(0)]
     public Team WinningTeam;
-    [FieldOffset(32)]
+    [FieldOffset(36)]
     public QBoolean IsSystemInitialized;
-    [FieldOffset(28)]
-    public QBoolean IsGoalPending;
     [FieldOffset(4)]
+    public Int32 RemainingTimeTicks;
+    [FieldOffset(32)]
+    public QBoolean IsGoalPending;
+    [FieldOffset(8)]
     public Int32 RespawnCountdown;
     public override Int32 GetHashCode() {
       unchecked { 
@@ -722,6 +728,7 @@ namespace Quantum {
         hash = hash * 31 + IsGameActive.GetHashCode();
         hash = hash * 31 + (Byte)WinningTeam;
         hash = hash * 31 + IsSystemInitialized.GetHashCode();
+        hash = hash * 31 + RemainingTimeTicks.GetHashCode();
         hash = hash * 31 + IsGoalPending.GetHashCode();
         hash = hash * 31 + RespawnCountdown.GetHashCode();
         return hash;
@@ -730,6 +737,7 @@ namespace Quantum {
     public static void Serialize(void* ptr, FrameSerializer serializer) {
         var p = (GameState*)ptr;
         serializer.Stream.Serialize((Byte*)&p->WinningTeam);
+        serializer.Stream.Serialize(&p->RemainingTimeTicks);
         serializer.Stream.Serialize(&p->RespawnCountdown);
         serializer.Stream.Serialize(&p->ScoreLeft);
         serializer.Stream.Serialize(&p->ScoreLimit);
@@ -1025,6 +1033,7 @@ namespace Quantum {
       typeRegistry.Register(typeof(FPVector3), FPVector3.SIZE);
       typeRegistry.Register(typeof(FrameMetaData), FrameMetaData.SIZE);
       typeRegistry.Register(typeof(FrameTimer), FrameTimer.SIZE);
+      typeRegistry.Register(typeof(Quantum.GameEndReason), 4);
       typeRegistry.Register(typeof(Quantum.GameState), Quantum.GameState.SIZE);
       typeRegistry.Register(typeof(Quantum.GoalPostSide), 1);
       typeRegistry.Register(typeof(Quantum.GoalPostTag), Quantum.GoalPostTag.SIZE);
@@ -1103,6 +1112,7 @@ namespace Quantum {
     public static void EnsureNotStrippedGen() {
       FramePrinter.EnsureNotStripped();
       FramePrinter.EnsurePrimitiveNotStripped<CallbackFlags>();
+      FramePrinter.EnsurePrimitiveNotStripped<Quantum.GameEndReason>();
       FramePrinter.EnsurePrimitiveNotStripped<Quantum.GoalPostSide>();
       FramePrinter.EnsurePrimitiveNotStripped<Quantum.InputButtons>();
       FramePrinter.EnsurePrimitiveNotStripped<Quantum.QStringUtf8_32>();

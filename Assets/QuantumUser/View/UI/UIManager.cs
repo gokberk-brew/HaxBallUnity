@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using Quantum;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Input = UnityEngine.Input;
 
 public class UIManager : MonoBehaviour
 {
-    [SerializeField] private GoalUIHandler goalUIHandler;
+    [FormerlySerializedAs("goalUIHandler")] [SerializeField] private InGameUIHandler inGameUIHandler;
     [SerializeField] private LobbyUIHandler lobbyUIHandler;
     
     void Start()

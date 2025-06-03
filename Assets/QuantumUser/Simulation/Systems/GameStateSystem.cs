@@ -37,6 +37,8 @@ namespace Quantum
             {
                 SpawnPlayers(f);
                 gameState->IsGameActive = true;
+                int simulationRate = (int)(1 / f.DeltaTime.AsFloat);
+                gameState->RemainingTimeTicks = gameState->TimeLimit * 60 * simulationRate;
                 f.Events.OnGameStarted();
             }
         }
@@ -76,20 +78,34 @@ namespace Quantum
 
         public override void Update(Frame f)
         {
-            if (f.Unsafe.TryGetPointerSingleton<GameState>(out var state))
+            if (f.Unsafe.TryGetPointerSingleton<GameState>(out var gameState))
             {
-                if (!state->IsGameActive)
+                if (!gameState->IsGameActive)
                     return;
                 
-                if (state->IsGoalPending)
+                if (gameState->TimeLimit > 0 && !gameState->IsGoalPending)
                 {
-                    state->RespawnCountdown--;
-                    if (state->RespawnCountdown <= 0)
+                    gameState->RemainingTimeTicks--;
+
+                    if (gameState->RemainingTimeTicks <= 0)
+                    {
+                        gameState->RemainingTimeTicks = 0;
+
+                        f.Events.OnGameEnded(GameEndReason.Timeout);
+                        gameState->IsGameActive = false;
+                        return;
+                    }
+                }
+                
+                if (gameState->IsGoalPending)
+                {
+                    gameState->RespawnCountdown--;
+                    if (gameState->RespawnCountdown <= 0)
                     {
                         RespawnPlayers(f);
                         RespawnPuck(f);
-                        state->IsGoalPending = false;
-                        state->RespawnCountdown = 120;
+                        gameState->IsGoalPending = false;
+                        gameState->RespawnCountdown = 120;
                     }
                 }
             }

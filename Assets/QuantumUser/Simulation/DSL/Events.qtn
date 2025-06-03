@@ -6,6 +6,9 @@ synced event OnGoalScored{
 }
 
 synced event OnGameStarted{}
+synced event OnGameEnded{
+    GameEndReason Reason;
+}
 
 synced event OnPlayerJoined{
    player_ref JoinedPlayer;
@@ -26,4 +29,10 @@ synced event OnTimeDropdownChanged{
 
 synced event OnScoreDropdownChanged{
     byte ScoreLimit;
+}
+
+
+enum GameEndReason{
+    Timeout,
+    Score
 }

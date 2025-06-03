@@ -6,6 +6,7 @@ singleton component GameState {
   Boolean IsGameActive;
   Team WinningTeam;
   Boolean IsSystemInitialized;
+  Int32 RemainingTimeTicks;
   
   // Respawn control
   Boolean IsGoalPending;
