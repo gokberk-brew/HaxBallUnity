@@ -6110,12 +6110,15 @@ MonoBehaviour:
   BlueContainer: {fileID: 2018899911}
   RedContainer: {fileID: 1105907243}
   SpectatorContainer: {fileID: 1283601686}
+  InGameButtonsParent: {fileID: 1783485440}
   playerUIPrefab: {fileID: 6264124213013263436, guid: 801f39ed9ad724bb7bc572f4dd8adc5a, type: 3}
   playerUIList: []
   RedButton: {fileID: 182332176}
   SpecButton: {fileID: 1804825432}
   BlueButton: {fileID: 1032255299}
   StartButton: {fileID: 292520057}
+  PauseButton: {fileID: 1288431163}
+  StopButton: {fileID: 1618101185}
   TimeDropdown: {fileID: 423103726}
   ScoreDropdown: {fileID: 125627833}
 --- !u!1 &1266075545

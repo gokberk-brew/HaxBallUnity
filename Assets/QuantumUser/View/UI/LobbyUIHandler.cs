@@ -1,15 +1,9 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using JetBrains.Annotations;
 using Quantum;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 using Button = UnityEngine.UI.Button;
 
 public class LobbyUIHandler : MonoBehaviour
@@ -17,12 +11,20 @@ public class LobbyUIHandler : MonoBehaviour
     [SerializeField] Transform BlueContainer;
     [SerializeField] Transform RedContainer;
     [SerializeField] Transform SpectatorContainer;
+    [SerializeField] private GameObject InGameButtonsParent;
     [SerializeField] PlayerUI playerUIPrefab;
     [SerializeField] List<PlayerUI> playerUIList = new List<PlayerUI>();
+    
+    [Header("Buttons")]
     [SerializeField] private Button RedButton;
     [SerializeField] private Button SpecButton;
     [SerializeField] private Button BlueButton;
     [SerializeField] private Button StartButton;
+    [SerializeField] private Button PauseButton;
+    [SerializeField] private Button StopButton;
+    
+    
+    [Header("Dropdowns")]
     [SerializeField] private TMP_Dropdown TimeDropdown;
     [SerializeField] private TMP_Dropdown ScoreDropdown;
     
@@ -74,6 +76,12 @@ public class LobbyUIHandler : MonoBehaviour
             ScoreDropdown.value = gameState.ScoreLimit;
             TimeDropdown.value = gameState.TimeLimit;
             _isServerUIUpdate = false;
+
+            if (gameState.IsGameActive)
+            {
+                InGameButtonsParent.SetActive(true);
+                StartButton.gameObject.SetActive(false);
+            }
         }
 
         _uiReady = true;
@@ -115,6 +123,8 @@ public class LobbyUIHandler : MonoBehaviour
 
     private void OnGameStarted(EventOnGameStarted callback)
     {
+        InGameButtonsParent.SetActive(true);
+        StartButton.gameObject.SetActive(false);
         gameObject.SetActive(false);
     }
 
