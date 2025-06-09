@@ -82,6 +82,13 @@ namespace Quantum
             {
                 if (!gameState->IsGameActive)
                     return;
+
+                if (gameState->IsEnding && !gameState->IsGoalPending)
+                {
+                    f.Signals.OnGameEnded();
+                    EndGame(f);
+                    return;
+                }
                 
                 if (gameState->TimeLimit > 0 && !gameState->IsGoalPending)
                 {
@@ -90,7 +97,7 @@ namespace Quantum
                     if (gameState->RemainingTimeTicks <= 0)
                     {
                         gameState->RemainingTimeTicks = 0;
-                        f.Signals.OnGameEnded();
+                        gameState->IsGoalPending = true;
                         return;
                     }
                 }
@@ -137,7 +144,7 @@ namespace Quantum
             }
         }
 
-        public void OnGameEnded(Frame f)
+        private void EndGame(Frame f)
         {
             if(!f.Unsafe.TryGetPointerSingleton<GameState>(out var gameState))
                 return;
@@ -156,7 +163,19 @@ namespace Quantum
             }
             
             gameState->IsGameActive = false;
+            gameState->IsEnding = false;
+            gameState->ScoreLeft = 0;
+            gameState->ScoreRight = 0;
+            
             f.Events.OnGameEnded(GameEndReason.Score);
+        }
+
+        public void OnGameEnded(Frame f)
+        {
+            if (f.Unsafe.TryGetPointerSingleton<GameState>(out var gameState))
+            {
+                gameState->IsEnding = true;
+            }
         }
     }
 }

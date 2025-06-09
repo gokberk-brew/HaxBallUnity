@@ -40,7 +40,8 @@ namespace Quantum {
             f.Events.OnGoalScored(scoringTeam, new GameState {
                 ScoreLeft    = state->ScoreLeft,
                 ScoreRight   = state->ScoreRight,
-                IsGameActive = state->IsGameActive
+                IsGameActive = state->IsGameActive,
+                WinningTeam = state -> WinningTeam,
             });
         }
 

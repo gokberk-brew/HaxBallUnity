@@ -13,7 +13,9 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         QuantumEvent.Subscribe<EventOnSystemInitialized>(this, Init);
+        QuantumEvent.Subscribe<EventOnGameEnded>(this, OnGameEnded);
     }
+
     private void Init(EventOnSystemInitialized callback)
     {
         var game = QuantumRunner.DefaultGame;
@@ -23,6 +25,12 @@ public class UIManager : MonoBehaviour
         {
             lobbyUIHandler.gameObject.SetActive(!gameState.IsGameActive);
         }
+    }
+    
+    private void OnGameEnded(EventOnGameEnded callback)
+    {
+        inGameUIHandler.Reset();
+        lobbyUIHandler.gameObject.SetActive(true);
     }
 
     public void OnLobbyButtonPressed()

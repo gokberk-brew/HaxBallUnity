@@ -60,6 +60,7 @@ namespace Quantum.Prototypes {
     public Quantum.QEnum8<Team> WinningTeam;
     public QBoolean IsSystemInitialized;
     public Int32 RemainingTimeTicks;
+    public QBoolean IsEnding;
     public QBoolean IsGoalPending;
     public Int32 RespawnCountdown;
     partial void MaterializeUser(Frame frame, ref Quantum.GameState result, in PrototypeMaterializationContext context);
@@ -77,6 +78,7 @@ namespace Quantum.Prototypes {
         result.WinningTeam = this.WinningTeam;
         result.IsSystemInitialized = this.IsSystemInitialized;
         result.RemainingTimeTicks = this.RemainingTimeTicks;
+        result.IsEnding = this.IsEnding;
         result.IsGoalPending = this.IsGoalPending;
         result.RespawnCountdown = this.RespawnCountdown;
         MaterializeUser(frame, ref result, in context);

@@ -60,7 +60,7 @@ public class InGameUIHandler : MonoBehaviour
         
         _goalText.gameObject.SetActive(true);
 
-        if (!callback.GameState.IsGameActive)
+        if (callback.GameState.WinningTeam != Team.Spec)
         {
             var winningText = callback.GameState.WinningTeam == Team.Left ? "Red" : "Blue";
             _goalText.text = winningText + " wins!";
