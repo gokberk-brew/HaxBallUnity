@@ -883,11 +883,15 @@ namespace Quantum {
   public unsafe partial interface ISignalOnGameStarted : ISignal {
     void OnGameStarted(Frame f);
   }
+  public unsafe partial interface ISignalOnGameEnded : ISignal {
+    void OnGameEnded(Frame f);
+  }
   public static unsafe partial class Constants {
   }
   public unsafe partial class Frame {
     private ISignalOnPlayerTeamUpdated[] _ISignalOnPlayerTeamUpdatedSystems;
     private ISignalOnGameStarted[] _ISignalOnGameStartedSystems;
+    private ISignalOnGameEnded[] _ISignalOnGameEndedSystems;
     partial void AllocGen() {
       _globals = (_globals_*)Context.Allocator.AllocAndClear(sizeof(_globals_));
     }
@@ -901,6 +905,7 @@ namespace Quantum {
       Initialize(this, this.SimulationConfig.Entities, 256);
       _ISignalOnPlayerTeamUpdatedSystems = BuildSignalsArray<ISignalOnPlayerTeamUpdated>();
       _ISignalOnGameStartedSystems = BuildSignalsArray<ISignalOnGameStarted>();
+      _ISignalOnGameEndedSystems = BuildSignalsArray<ISignalOnGameEnded>();
       _ComponentSignalsOnAdded = new ComponentReactiveCallbackInvoker[ComponentTypeId.Type.Length];
       _ComponentSignalsOnRemoved = new ComponentReactiveCallbackInvoker[ComponentTypeId.Type.Length];
       BuildSignalsArrayOnComponentAdded<CharacterController2D>();
@@ -989,6 +994,15 @@ namespace Quantum {
           var s = array[i];
           if (_f.SystemIsEnabledInHierarchy((SystemBase)s)) {
             s.OnGameStarted(_f);
+          }
+        }
+      }
+      public void OnGameEnded() {
+        var array = _f._ISignalOnGameEndedSystems;
+        for (Int32 i = 0; i < array.Length; ++i) {
+          var s = array[i];
+          if (_f.SystemIsEnabledInHierarchy((SystemBase)s)) {
+            s.OnGameEnded(_f);
           }
         }
       }

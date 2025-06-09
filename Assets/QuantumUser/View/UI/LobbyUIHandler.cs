@@ -37,6 +37,7 @@ public class LobbyUIHandler : MonoBehaviour
         QuantumEvent.Subscribe<EventOnPlayerLeft>(this, OnPlayerLeft);
         QuantumEvent.Subscribe<EventOnPlayerChangeTeam>(this, OnPlayerChangeTeam);
         QuantumEvent.Subscribe<EventOnGameStarted>(this, OnGameStarted);
+        QuantumEvent.Subscribe<EventOnGameEnded>(this, OnGameEnded);
         QuantumEvent.Subscribe<EventOnScoreDropdownChanged>(this, UpdateScoreDropdown);
         QuantumEvent.Subscribe<EventOnTimeDropdownChanged>(this, UpdateTimeDropdown);
         QuantumEvent.Subscribe<EventOnSystemInitialized>(this, InitUI);
@@ -48,6 +49,12 @@ public class LobbyUIHandler : MonoBehaviour
         TimeDropdown.onValueChanged.AddListener( HandleTimeDropdownValueChange);
         ScoreDropdown.onValueChanged.AddListener(HandleScoreDropdownValueChange);
         IsQuantumInitialized();
+    }
+
+    private void OnGameEnded(EventOnGameEnded callback)
+    {
+        InGameButtonsParent.SetActive(false);
+        StartButton.gameObject.SetActive(true);
     }
 
     private void IsQuantumInitialized()

@@ -18,6 +18,13 @@ public class InGameUIHandler : MonoBehaviour
         _rightText.text = 0.ToString();
         QuantumEvent.Subscribe<EventOnGoalScored>(this, OnGoalScored);
     }
+
+    public void Reset()
+    {
+        _leftText.text = 0.ToString();
+        _rightText.text = 0.ToString();
+        _timerText.text = "00 : 00";
+    }
     
     private void Update()
     {

@@ -8,7 +8,7 @@ namespace Quantum
     using UnityEngine.Scripting;
 
     [Preserve]
-    public unsafe class GameStateSystem : SystemMainThread, ISignalOnGameStarted
+    public unsafe class GameStateSystem : SystemMainThread, ISignalOnGameStarted, ISignalOnGameEnded
     {
         public override void OnInit(Frame f)
         {
@@ -90,9 +90,7 @@ namespace Quantum
                     if (gameState->RemainingTimeTicks <= 0)
                     {
                         gameState->RemainingTimeTicks = 0;
-
-                        f.Events.OnGameEnded(GameEndReason.Timeout);
-                        gameState->IsGameActive = false;
+                        f.Signals.OnGameEnded();
                         return;
                     }
                 }
@@ -114,7 +112,7 @@ namespace Quantum
                 }
             }
         }
-        
+
         private void RespawnPlayers(Frame f)
         {
             foreach (var playerLink in f.Unsafe.GetComponentBlockIterator<PlayerLink>())
@@ -137,6 +135,28 @@ namespace Quantum
                 body->Velocity = FPVector2.Zero;
                 body->AngularVelocity = 0;
             }
+        }
+
+        public void OnGameEnded(Frame f)
+        {
+            if(!f.Unsafe.TryGetPointerSingleton<GameState>(out var gameState))
+                return;
+            
+            if(!gameState->IsGameActive)
+                return;
+            
+            foreach (var (entityRef, _) in f.Unsafe.GetComponentBlockIterator<PlayerLink>())
+            {
+                f.Destroy(entityRef);
+            }
+
+            foreach (var (entityRef, _) in f.Unsafe.GetComponentBlockIterator<PuckTag>())
+            {
+                f.Destroy(entityRef);
+            }
+            
+            gameState->IsGameActive = false;
+            f.Events.OnGameEnded(GameEndReason.Score);
         }
     }
 }

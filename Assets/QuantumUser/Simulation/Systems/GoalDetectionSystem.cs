@@ -45,10 +45,8 @@ namespace Quantum {
         }
 
         private void EndGame(Frame f, GameState* state, Team winner) {
-            state->IsGameActive = false;
             state->WinningTeam  = winner;
-
-            f.Events.OnGameEnded(GameEndReason.Score);
+            f.Signals.OnGameEnded();
         }
     }
 }
