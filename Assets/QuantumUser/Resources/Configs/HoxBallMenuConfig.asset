@@ -17,10 +17,7 @@ MonoBehaviour:
   _availableAppVersions:
   - 1.0
   _availableRegions:
-  - asia
-  - eu
-  - sa
-  - us
+  - tr
   _availableScenes:
   - Name: HoxBall
     ScenePath: Assets/QuantumUser/Scenes/HoxBallGameScene.unity

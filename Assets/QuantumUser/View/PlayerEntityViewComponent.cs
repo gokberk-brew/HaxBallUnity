@@ -11,7 +11,6 @@ namespace Quantum
         [SerializeField] private SpriteRenderer _shootIndicator;
         private bool _initialized;
         [SerializeField] private Color _targetColor;
-
         public override void OnUpdateView()
         {
             if (!_initialized || _playerIndicator == null || QuantumRunner.Default == null)
@@ -19,6 +18,12 @@ namespace Quantum
 
             var game = QuantumRunner.Default.Game;
             var frame = game.Frames.Verified;
+
+            var playerRef = frame.Get<PlayerLink>(EntityRef).PlayerRef;
+            if (game.PlayerIsLocal(playerRef) && !CameraManager.VCam.Follow) 
+            {
+                CameraManager.VCam.Follow = transform;
+            }
 
             if (!frame.Has<PlayerState>(EntityRef))
                 return;
